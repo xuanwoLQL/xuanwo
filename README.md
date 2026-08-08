@@ -158,6 +158,29 @@ OpenHarmony AI 漏洞挖掘命令行工具（基于 OpenCode 架构定制）
 - TOCTOU 文件 → 主控调度 race-checker，识别权限绕过 + 条件竞争 + 内存泄漏
 - 整数溢出 / memcpy 越界 / napi_ref 引用 → 均被正确识别并给出 file:line
 
+## 第七阶段：技能系统（已完成）
+
+### 技能架构
+```
+packages/resources/skills/
+├── napi-audit/SKILL.md     # NAPI 接口审计指南
+├── ipc-security/SKILL.md   # 鸿蒙 IPC 通信安全分析
+└── token-check/SKILL.md    # Ability Token 鉴权机制检查
+```
+- 每个技能：YAML frontmatter（id/name/description/tools）+ 审计指南主体
+- **工具白名单校验**：加载时校验 `tools` 声明是否在全局白名单（grep/git/read），非法技能拒绝加载
+- **SkillExecutor**：技能通过 ToolExecutor 安全接口执行外部命令，双层校验（技能声明 + 全局白名单）
+
+### 技能作为可发现资源
+- `SkillRegistry` 将技能注册为可发现资源，摘要注入智能体提示词（`{{AVAILABLE_SKILLS}}`）
+- **`load_skill` 工具**：模型运行时按需加载技能详情（审计指南），驱动针对性审计
+- CLI：`xuanwo skill list | validate | <skill-id>`
+
+### 端到端验证
+- `skill list` → 3 个技能加载，工具声明正确
+- `skill validate` → 白名单校验 PASS
+- 智能体审计时先 `load_skill napi-audit` 加载指南 → 应用指南识别 argc 未校验等问题
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

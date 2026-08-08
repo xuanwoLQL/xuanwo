@@ -4,6 +4,7 @@ import { runAgentCommand } from "./commands/agent.js";
 import { runKnowledgeCommand } from "./commands/knowledge.js";
 import { runSessionCommand, runResumeCommand } from "./commands/session.js";
 import { runScanCommand, runAnalyzeCommand, runReportCommand } from "./commands/scan.js";
+import { runSkillCommand } from "./commands/skill.js";
 import { runTui } from "./ui/index.js";
 
 const program = new Command();
@@ -140,6 +141,13 @@ program
       process.exit(1);
     }
     await runTui();
+  });
+
+program
+  .command("skill <args...>")
+  .description("技能管理: list | validate | <skill-id>")
+  .action((args) => {
+    runSkillCommand(args);
   });
 
 program.parse();

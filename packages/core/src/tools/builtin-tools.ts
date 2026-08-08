@@ -54,8 +54,8 @@ function grepTree(
   return out;
 }
 
-export function createBuiltinTools(toolExecutor: ToolExecutor): AgentTool[] {
-  return [
+export function createBuiltinTools(toolExecutor: ToolExecutor, skills?: import("../skills/registry.js").SkillRegistry): AgentTool[] {
+  const tools: AgentTool[] = [
     {
       definition: {
         name: "read",
@@ -111,4 +111,29 @@ export function createBuiltinTools(toolExecutor: ToolExecutor): AgentTool[] {
       },
     },
   ];
+
+  // load_skill 工具：按需加载技能详情（技能作为可发现资源）
+  if (skills) {
+    tools.push({
+      definition: {
+        name: "load_skill",
+        description: `加载技能详情（审计指南）。可用技能: ${skills.list().map((s) => s.id).join(", ")}。参数: {skill: string}`,
+        parameters: {
+          type: "object",
+          properties: { skill: { type: "string" } },
+          required: ["skill"],
+        },
+      },
+      execute: async (args) => {
+        const id = String(args.skill ?? "");
+        if (!id) return "错误: 缺少 skill 参数";
+        const body = skills.getBody(id);
+        if (body === undefined) {
+          return `错误: 技能不存在 "${id}"。可用: ${skills.list().map((s) => s.id).join(", ")}`;
+        }
+        return body;
+      },
+    });
+  }
+  return tools;
 }

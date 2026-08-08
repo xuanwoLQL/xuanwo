@@ -17,6 +17,9 @@ import { buildKnowledgeSummary } from "./knowledge/summary.js";
 import { ConfigManager } from "./security/config.js";
 import { CredentialManager } from "./security/credentials.js";
 import { SessionManager } from "./session/session.js";
+import { loadSkillsFromDir, type SkillConfig } from "./skills/loader.js";
+import { SkillRegistry } from "./skills/registry.js";
+import { SkillExecutor } from "./skills/executor.js";
 import type { AuditContext } from "./agent/audit-context.js";
 
 /**
@@ -47,23 +50,30 @@ async function resolveApiKey(provider: string): Promise<string | undefined> {
 export interface RuntimeResources {
   knowledgeDir: string;
   agentsDir: string;
+  skillsDir: string;
 }
 
 export class AgentRuntime {
   readonly orchestrator: AgentOrchestrator;
   readonly knowledge: KnowledgeBase;
   readonly config: ConfigManager;
+  readonly skills: SkillRegistry;
+  readonly skillExecutor: SkillExecutor;
 
   private constructor(
     llm: LlmClient,
     agents: AgentConfig[],
     toolExecutor: ToolExecutor,
     config: ConfigManager,
-    knowledge: KnowledgeBase
+    knowledge: KnowledgeBase,
+    skills: SkillRegistry,
+    skillExecutor: SkillExecutor
   ) {
     this.config = config;
     this.knowledge = knowledge;
-    this.orchestrator = new AgentOrchestrator(llm, agents, createBuiltinTools(toolExecutor));
+    this.skills = skills;
+    this.skillExecutor = skillExecutor;
+    this.orchestrator = new AgentOrchestrator(llm, agents, createBuiltinTools(toolExecutor, skills));
   }
 
   static async create(options: Partial<RuntimeResources> = {}): Promise<AgentRuntime> {
@@ -85,22 +95,13 @@ export class AgentRuntime {
     // 资源路径（支持覆盖）
     const agentsDir = options.agentsDir ?? join(process.cwd(), "packages", "resources", "agents");
     const knowledgeDir = options.knowledgeDir ?? join(process.cwd(), "packages", "resources", "knowledge");
+    const skillsDir = options.skillsDir ?? join(process.cwd(), "packages", "resources", "skills");
 
     // 加载知识库
     const knowledge = new KnowledgeBase(knowledgeDir);
     knowledge.load();
 
-    // 生成模板上下文
-    const knowledgeSummary = buildKnowledgeSummary(knowledge.all(), cfg.authorizedTarget ?? "");
-    const templateCtx = {
-      DEFAULT_MODEL: cfg.defaultModel || "deepseek-v4-flash",
-      KNOWLEDGE_SUMMARY: knowledgeSummary,
-    };
-
-    // 加载智能体
-    const agents = [...loadAgentsFromDir(agentsDir, templateCtx).values()];
-
-    // ToolExecutor（仅授权目录）
+    // 加载技能（工具白名单 = ToolExecutor 命令 + 内置 read）
     const toolExecutor = new ToolExecutor({
       authorizedPaths: cfg.authorizedPaths,
       allowedCommands: [
@@ -109,8 +110,23 @@ export class AgentRuntime {
         { command: "read", bin: "read" },
       ],
     });
+    const allowedTools = new Set<string>(["grep", "git", "read"]);
+    const skillLoad = loadSkillsFromDir(skillsDir, { DEFAULT_MODEL: cfg.defaultModel || "deepseek-v4-flash", KNOWLEDGE_SUMMARY: "" }, allowedTools);
+    const skills = new SkillRegistry(skillLoad.skills, skillLoad.rejected);
+    const skillExecutor = new SkillExecutor(toolExecutor, allowedTools);
 
-    return new AgentRuntime(llm, agents, toolExecutor, config, knowledge);
+    // 生成模板上下文（含技能摘要，作为可发现资源）
+    const knowledgeSummary = buildKnowledgeSummary(knowledge.all(), cfg.authorizedTarget ?? "");
+    const templateCtx = {
+      DEFAULT_MODEL: cfg.defaultModel || "deepseek-v4-flash",
+      KNOWLEDGE_SUMMARY: knowledgeSummary,
+      AVAILABLE_SKILLS: skills.summaryText(),
+    };
+
+    // 加载智能体
+    const agents = [...loadAgentsFromDir(agentsDir, templateCtx).values()];
+
+    return new AgentRuntime(llm, agents, toolExecutor, config, knowledge, skills, skillExecutor);
   }
 
   runTask(

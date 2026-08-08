@@ -19,6 +19,10 @@ subagents: []
 ## Nday 知识参考
 {{KNOWLEDGE_SUMMARY}}
 
+## 可用技能
+{{AVAILABLE_SKILLS}}
+（napi-audit 技能提供完整的 NAPI 审计方法，需时加载）
+
 ## 典型危险模式
 - `napi_get_value_string_utf8` 传入未初始化/过小的 bufsize
 - `napi_get_value_array_length` 与 `napi_get_element` 之间缺乏边界一致性检查
