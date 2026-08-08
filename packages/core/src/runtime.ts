@@ -113,8 +113,13 @@ export class AgentRuntime {
     return new AgentRuntime(llm, agents, toolExecutor, config, knowledge);
   }
 
-  runTask(task: string, context?: Partial<AuditContext>, onStep?: (step: import("./agent/orchestrator.js").OrchestratorStep) => void) {
-    return this.orchestrator.run(task, context, onStep);
+  runTask(
+    task: string,
+    context?: Partial<AuditContext>,
+    onStep?: (step: import("./agent/orchestrator.js").OrchestratorStep) => void,
+    runOptions?: import("./agent/react.js").AgentRunOptions
+  ) {
+    return this.orchestrator.run(task, context, onStep, runOptions);
   }
 
   availableAgents(): { id: string; name: string; role: string; description: string }[] {

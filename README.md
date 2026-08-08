@@ -132,6 +132,32 @@ OpenHarmony AI 漏洞挖掘命令行工具（基于 OpenCode 架构定制）
 ### 关键技术决策
 - **放弃 ink TUI**：依赖 top-level await + react-devtools-core，CJS 打包失败、体积大、Windows 兼容风险 → 改用 readline + ANSI 轻量方案
 
+## 第六阶段：OpenHarmony 专项功能（已完成）
+
+### 0day 自动挖掘引擎（`xuanwo scan <path>`）
+1. 收集源码文件（.c/.cpp/.h/.java/.ets 等，跳过 .git/build/node_modules）
+2. 快速特征扫描（无 LLM）：napi_get_value_string / memcpy / napi_ref / CheckPermission 等 8 类高风险信号排序
+3. 并发深度分析（默认 3 并发）：主控智能体结合知识库模式挖掘
+4. 实时进度条 + 汇总报告（Markdown 存 ~/.xuanwo/reports/）
+
+### 其他专项命令
+- `xuanwo analyze <file>` — 单文件深度分析（自动调度子智能体）
+- `xuanwo report [file]` — 查看/生成审计报告
+- `packages/resources/knowledge/high-risk-modules.md` — 高风险模块清单（Top 12，从知识库统计）
+
+### 状态进度追踪
+- scan 过程实时进度条（文件数 / 百分比 / 当前文件）
+- 高风险文件优先分析
+
+### 关键修复记录
+- ReAct 工具循环不收敛 → 增加**工具结果缓存**（同 tool+参数只执行一次）
+- moduleOf 基于文件路径而非 location 字符串提取模块
+- analyze 提高迭代上限至 15
+
+### 端到端验证（测试源码树）
+- TOCTOU 文件 → 主控调度 race-checker，识别权限绕过 + 条件竞争 + 内存泄漏
+- 整数溢出 / memcpy 越界 / napi_ref 引用 → 均被正确识别并给出 file:line
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

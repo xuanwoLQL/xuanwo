@@ -51,6 +51,8 @@ final 对象格式：
 - dispatch 可选：主控智能体需要派发子任务时填写，子智能体填 []`;
 
 export class ReActAgent {
+  private toolCache = new Map<string, string>();
+
   constructor(
     private llm: LlmClient,
     private tools: Map<string, AgentTool>,
@@ -172,7 +174,15 @@ ${toolDesc || "- 无工具（仅推理）"}
 
       options.onStep?.({ type: "tool", content: step.thought, toolName: step.action.tool });
       const input = (step.action.input ?? {}) as Record<string, unknown>;
-      const result = await tool.execute(input);
+      const cacheKey = `${step.action.tool}:${JSON.stringify(input)}`;
+      let result: string;
+      if (this.toolCache.has(cacheKey)) {
+        result = this.toolCache.get(cacheKey) as string;
+      } else {
+        result = await tool.execute(input);
+        this.toolCache.set(cacheKey, result);
+        if (this.toolCache.size > 50) this.toolCache.clear();
+      }
       options.onStep?.({ type: "observe", content: result, toolName: step.action.tool });
       messages.push({ role: "assistant", content: JSON.stringify(step) });
       messages.push({ role: "user", content: `工具 ${step.action.tool} 输出:\n${result.slice(0, 8000)}` });

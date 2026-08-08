@@ -3,6 +3,7 @@ import { ConfigManager, runSetup, DISCLAIMER } from "@xuanwo/core";
 import { runAgentCommand } from "./commands/agent.js";
 import { runKnowledgeCommand } from "./commands/knowledge.js";
 import { runSessionCommand, runResumeCommand } from "./commands/session.js";
+import { runScanCommand, runAnalyzeCommand, runReportCommand } from "./commands/scan.js";
 import { runTui } from "./ui/index.js";
 
 const program = new Command();
@@ -83,20 +84,36 @@ program
 
 program
   .command("scan <path>")
-  .description("启动源码扫描")
-  .action((path) => {
+  .description("启动源码扫描（0day 自动挖掘）")
+  .option("--max-files <n>", "最大深度分析文件数", "10")
+  .option("--concurrency <n>", "并发数", "3")
+  .option("--report", "生成报告文件")
+  .action((path, opts) => {
     const cfg = new ConfigManager();
     if (!cfg.requireAccepted()) {
       console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
       process.exit(1);
     }
-    if (!cfg.isAuthorized(path)) {
-      console.log(`❌ 路径未授权: ${path}`);
-      console.log(`   请运行: xuanwo config --authorize "${path}"`);
-      console.log("   或设置环境变量 XUANWO_AUTHORIZED_TARGET");
+    runScanCommand(path, opts);
+  });
+
+program
+  .command("analyze <file>")
+  .description("深度分析单个文件")
+  .action((file) => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
       process.exit(1);
     }
-    console.log(`扫描功能将在阶段六提供 (${path})`);
+    runAnalyzeCommand(file);
+  });
+
+program
+  .command("report [file]")
+  .description("查看审计报告")
+  .action((file) => {
+    runReportCommand(file);
   });
 
 program

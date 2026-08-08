@@ -11,6 +11,7 @@ export * from "./tools/builtin-tools.js";
 export * from "./knowledge/knowledge.js";
 export * from "./knowledge/retriever.js";
 export * from "./knowledge/summary.js";
+export * from "./scan/engine.js";
 export * from "./session/session.js";
 export * from "./security/config.js";
 export * from "./security/credentials.js";
