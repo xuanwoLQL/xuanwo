@@ -15,7 +15,12 @@ import { theme } from "./styles/theme.js";
 import type { ToolProgressState } from "./components/ToolProgress.js";
 
 const VERSION = "0.1.0";
-const AGENTS = ["openharmony-hunter", "napi-auditor", "ipc-analyzer", "race-checker", "poc-generator"];
+type Mode = "code" | "security";
+
+const MODE_AGENTS: Record<Mode, string[]> = {
+  code: ["coder", "explorer"],
+  security: ["openharmony-hunter", "napi-auditor", "ipc-analyzer", "race-checker", "poc-generator"],
+};
 
 export interface AppProps {
   runtime: AgentRuntime;
@@ -28,6 +33,7 @@ export function App({ runtime }: AppProps): React.ReactElement {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [splash, setSplash] = useState(true);
+  const [mode, setMode] = useState<Mode>("code");
   const [agentIdx, setAgentIdx] = useState(0);
   const [paletteVisible, setPaletteVisible] = useState(false);
   const [tool, setTool] = useState<ToolProgressState | null>(null);
@@ -36,7 +42,7 @@ export function App({ runtime }: AppProps): React.ReactElement {
   const [scrollOffset, setScrollOffset] = useState(0);
   const [exitHint, setExitHint] = useState("");
 
-  const currentAgent = AGENTS[agentIdx];
+  const currentAgent = MODE_AGENTS[mode][agentIdx];
   const model = runtime.config.get().defaultModel || "deepseek-v4-flash";
   const scrollRef = useRef(0);
 
@@ -60,15 +66,24 @@ export function App({ runtime }: AppProps): React.ReactElement {
       setScrollOffset(0);
 
       try {
-        const result = await runtime.runTask(cmd, {}, (step) => {
-          // 工具调用可视化
-          if (step.type === "tool") {
-            const toolName = (step.content || "").split("\n")[0].slice(0, 40);
-            setTool({ name: `agent ${step.agentId}: ${toolName}`, status: "running", pct: 50 });
-          } else if (step.type === "final") {
-            setTool({ name: "完成", status: "done", pct: 100 });
-          }
-        });
+        // 编程模式：直接跑 coder/explorer；安全模式：主控调度
+        const result = mode === "code"
+          ? await runtime.runAgent(currentAgent, cmd, {}, (step) => {
+              if (step.type === "tool") {
+                const toolName = (step.content || "").split("\n")[0].slice(0, 40);
+                setTool({ name: `agent ${step.agentId}: ${toolName}`, status: "running", pct: 50 });
+              } else if (step.type === "final") {
+                setTool({ name: "完成", status: "done", pct: 100 });
+              }
+            })
+          : await runtime.runTask(cmd, {}, (step) => {
+              if (step.type === "tool") {
+                const toolName = (step.content || "").split("\n")[0].slice(0, 40);
+                setTool({ name: `agent ${step.agentId}: ${toolName}`, status: "running", pct: 50 });
+              } else if (step.type === "final") {
+                setTool({ name: "完成", status: "done", pct: 100 });
+              }
+            });
         addMessage({ role: "assistant", content: result.conclusion, agent: currentAgent });
       } catch (e) {
         addMessage({ role: "error", content: (e as Error).message });
@@ -78,7 +93,7 @@ export function App({ runtime }: AppProps): React.ReactElement {
         setScrollOffset(0);
       }
     },
-    [addMessage, currentAgent, runtime, history.length]
+    [addMessage, currentAgent, runtime, history.length, mode]
   );
 
   // 命令处理
@@ -157,9 +172,18 @@ export function App({ runtime }: AppProps): React.ReactElement {
       return;
     }
 
+    // 模式切换（编程/安全）
+    if (key.ctrl && inputStr === "m") {
+      setMode((m) => (m === "code" ? "security" : "code"));
+      setAgentIdx(0);
+      addMessage({ role: "system", content: `切换到${mode === "code" ? "安全" : "编程"}模式` });
+      return;
+    }
+
     // 智能体切换
     if (key.ctrl && inputStr === "t") {
-      setAgentIdx((i) => (i + 1) % AGENTS.length);
+      const agents = MODE_AGENTS[mode];
+      setAgentIdx((i) => (i + 1) % agents.length);
       return;
     }
 
@@ -226,7 +250,7 @@ export function App({ runtime }: AppProps): React.ReactElement {
     );
   }
 
-  const hint = exitHint || (busy ? "分析中..." : "输入 /help 查看命令 · /scan <path> 扫描 · /knowledge <q> 检索");
+  const hint = exitHint || (busy ? "分析中..." : mode === "code" ? "💻 编程模式 · Ctrl+M 切安全 · Ctrl+T 切智能体" : "🛡 安全模式 · Ctrl+M 切编程 · /scan <path> · /knowledge <q>");
 
   return (
     <Box flexDirection="column" height="100%">
@@ -243,7 +267,7 @@ export function App({ runtime }: AppProps): React.ReactElement {
       {/* 底部三行状态栏 */}
       <StatusBar
         model={model}
-        agent={currentAgent}
+        agent={`${mode === "code" ? "💻" : "🛡"} ${currentAgent}`}
         sessionId={sessionId}
         messageCount={count}
         tool={tool}

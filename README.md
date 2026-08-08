@@ -315,6 +315,25 @@ packages/resources/skills/
 - CLI：`xuanwo verify <file> [--type <类型>]`
 - 验证：栈溢出复现捕获 `WRITE of size 49`（stack-buffer-overflow）；安全代码正确判定无可疑点
 
+## 双模式架构（编程 + 安全）
+
+```
+xuanwo
+├── 💻 编程模式 (OpenCode 能力)
+│   ├── coder 智能体     — 编写/修改/多文件编辑/审查
+│   ├── explorer 智能体  — 代码探索/定位/理解
+│   └── 工具: edit(9策略) / write / glob / todo
+├── 🛡 安全模式 (CyberStrike 能力)
+│   ├── openharmony-hunter + 4 子智能体
+│   └── 工具: 污点/追踪/验证/攻击链/知识库
+└── 共享: ToolExecutor / MCP / LLM / TUI
+```
+
+- TUI `Ctrl+M` 切换模式，`Ctrl+T` 切换智能体，状态栏显示模式
+- CLI：`xuanwo code "任务"`（编程）/ `--explore`（探索）/ 安全命令不变
+- 多策略 edit（借鉴 opencode 9 种替换策略：缩进/空白/行尾容错）
+- 验证：coder 正确添加 subtract/multiply 函数并更新导出（add=3,subtract=2,multiply=12）
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

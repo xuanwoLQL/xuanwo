@@ -26,6 +26,7 @@ import { resolveResourcePaths } from "./resources.js";
 import { TaintTracer } from "./scan/taint-tracer.js";
 import { buildAttackChain } from "./attackchain/builder.js";
 import { verifyFindings } from "./scan/verify.js";
+import { createCodingTools } from "./tools/coding-tools.js";
 import { createEmptyContext, type AuditContext } from "./agent/audit-context.js";
 
 /**
@@ -92,6 +93,10 @@ export class AgentRuntime {
         setContext: () => {},
       }
     );
+    // 合并编程工具（edit/write/glob/todo）
+    for (const t of createCodingTools(toolExecutor)) {
+      builtinTools.push(t);
+    }
     this.orchestrator = new AgentOrchestrator(llm, agents, builtinTools);
     // 注册 MCP 工具
     if (mcpManager) {
@@ -183,6 +188,22 @@ export class AgentRuntime {
     runOptions?: import("./agent/react.js").AgentRunOptions
   ) {
     return this.orchestrator.run(task, context, onStep, runOptions);
+  }
+
+  /** 直接运行指定智能体（不走主控调度，供编程模式用） */
+  runAgent(
+    agentId: string,
+    task: string,
+    context?: Partial<AuditContext>,
+    onStep?: (step: import("./agent/orchestrator.js").OrchestratorStep) => void,
+    runOptions?: import("./agent/react.js").AgentRunOptions
+  ) {
+    const ctx = {
+      ...createEmptyContext(),
+      ...(context ?? {}),
+      analysisStack: [agentId],
+    };
+    return this.orchestrator.runSubagent(agentId, task, ctx, onStep, runOptions);
   }
 
   /** 跨函数污点追踪（借鉴 IVAgent 调用链深度 3-5 层） */

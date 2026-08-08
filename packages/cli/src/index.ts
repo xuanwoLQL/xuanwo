@@ -7,6 +7,7 @@ import { runScanCommand, runAnalyzeCommand, runReportCommand } from "./commands/
 import { runTraceCommand } from "./commands/trace.js";
 import { runChainCommand } from "./commands/chain.js";
 import { runVerifyCommand } from "./commands/verify.js";
+import { runCodeCommand } from "./commands/code.js";
 import { runSkillCommand } from "./commands/skill.js";
 import { runMcpCommand } from "./commands/mcp.js";
 import { runTui } from "./ui/index.js";
@@ -29,6 +30,19 @@ program
       process.exit(1);
     }
     await runAgentCommand(args, opts);
+  });
+
+program
+  .command("code <args...>")
+  .description("编程模式: xuanwo code \"任务\"（coder 智能体） 或 --explore")
+  .option("--explore", "使用代码探索智能体")
+  .action(async (args, opts) => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
+      process.exit(1);
+    }
+    await runCodeCommand(args, opts);
   });
 
 program
