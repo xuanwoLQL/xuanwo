@@ -13,6 +13,11 @@ function sh(cmd) {
   execSync(cmd, { cwd: root, stdio: "inherit", shell: true });
 }
 
+// 0. 恢复 react-devtools-core stub（ink 可选依赖，Node 环境不可用，npm install 可能覆盖）
+mkdirSync(join(root, "node_modules", "react-devtools-core"), { recursive: true });
+cpSync(join(root, "scripts", "stubs", "react-devtools-core"), join(root, "node_modules", "react-devtools-core"), { recursive: true });
+console.log("> react-devtools-core stub 已就绪");
+
 // 1. Bun 打包 CLI 为单文件 exe（含 Ink/react/yoga 全依赖内嵌）
 sh(
   `bun build packages/cli/src/index.ts --compile --outfile dist/xuanwo.exe --tsconfig=tsconfig.json`

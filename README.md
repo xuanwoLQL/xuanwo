@@ -307,6 +307,14 @@ packages/resources/skills/
 - none：无证据 → 置信度上限 0.3
 - 杜绝"无证据高置信度"的假阳性
 
+### 验证闭环（`scan/verify.ts`）
+- 对可疑点生成最小复现程序（LLM）→ WSL gcc `-fsanitize=address` 编译运行
+- ASAN 崩溃检测：stack/heap-buffer-overflow / use-after-free / SEGV
+- 结果分级：verified（确认漏洞）/ no-crash（可能误报）/ compile-error / skipped
+- 已确认漏洞自动保存 PoC 到 `~/.xuanwo/pocs/`
+- CLI：`xuanwo verify <file> [--type <类型>]`
+- 验证：栈溢出复现捕获 `WRITE of size 49`（stack-buffer-overflow）；安全代码正确判定无可疑点
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

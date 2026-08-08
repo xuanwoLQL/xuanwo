@@ -17,6 +17,7 @@ export * from "./scan/engine.js";
 export * from "./scan/taint.js";
 export * from "./scan/taint-tracer.js";
 export * from "./scan/indexer.js";
+export * from "./scan/verify.js";
 export * from "./attackchain/builder.js";
 export * from "./skills/loader.js";
 export * from "./skills/registry.js";

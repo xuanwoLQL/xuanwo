@@ -6,6 +6,7 @@ import { runSessionCommand, runResumeCommand } from "./commands/session.js";
 import { runScanCommand, runAnalyzeCommand, runReportCommand } from "./commands/scan.js";
 import { runTraceCommand } from "./commands/trace.js";
 import { runChainCommand } from "./commands/chain.js";
+import { runVerifyCommand } from "./commands/verify.js";
 import { runSkillCommand } from "./commands/skill.js";
 import { runMcpCommand } from "./commands/mcp.js";
 import { runTui } from "./ui/index.js";
@@ -147,6 +148,19 @@ program
       process.exit(1);
     }
     runChainCommand(file, opts);
+  });
+
+program
+  .command("verify <file>")
+  .description("验证闭环：生成复现程序 + ASAN 编译运行确认漏洞")
+  .option("--type <类型>", "只验证指定类型")
+  .action((file, opts) => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
+      process.exit(1);
+    }
+    runVerifyCommand(file, opts);
   });
 
 program

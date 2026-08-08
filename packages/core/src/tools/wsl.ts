@@ -42,7 +42,7 @@ export function toWslPath(p: string): string {
  * 在 WSL 中执行命令（spawn 避免 shell 引号/路径转换问题）
  * 用 wsl -e 直接执行，不经 Windows shell。
  */
-function wslExec(cmd: string): string {
+export function wslExec(cmd: string): string {
   const res = spawnSync("wsl.exe", ["-e", "bash", "-lc", cmd], {
     encoding: "utf8",
     maxBuffer: 64 * 1024 * 1024,
