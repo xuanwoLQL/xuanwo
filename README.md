@@ -226,19 +226,22 @@ packages/resources/skills/
 - **Bun compile + Ink** ✅ 可行：`bun build --compile` 生成单文件 exe（118MB，含 React/ink/yoga），知识库/技能/智能体/keytar 全部正常
 - 打包命令：`npm run package`（build.js 复制资源 → bun build --compile）
 
-### 对话式 TUI（Ink 实现）
-- 启动画面：彩虹渐变 ASCII Logo（`ui/splash.ts`，纯 Node 逐字符着色）+ 初始化进度
-- 消息列表：用户/AI/工具消息不同颜色区分，支持滚动
-- 输入框：底部输入，↑↓ 历史记录，Enter 提交
-- 状态栏：显示智能体、状态、提示信息
-- 工具调用可视化：分析中显示状态
-- 透明背景：工具不强制背景色，由终端模拟器（Windows Terminal/WezTerm）设置透明度
-- 快捷命令：/scan /analyze /knowledge /nday /status /help /quit
+### 对话式 TUI（Ink 实现，OpenCode 风格）
+- **启动画面**：彩虹渐变 ASCII Logo（`ui/splash.ts`）+ 版本号，1.2s 后进入对话
+- **底部三行状态栏**（`ui/components/StatusBar.tsx`）：
+  - 行1: `● 模型 | 智能体 | 会话 | 消息数`
+  - 行2: 工具调用进度条（🔧 执行中 / ✅ 完成）
+  - 行3: 输入区 + 历史索引
+- **消息列表**：用户(AI/工具/错误/系统)不同颜色，代码块边框缩进，支持 PgUp/PgDn 滚动
+- **命令面板**：`Ctrl+P` 弹出 10 条命令列表，Esc 关闭
+- **快捷键**：`Ctrl+P` 面板、`Ctrl+T` 切换智能体、`PgUp/PgDn` 滚动、`Ctrl+C` 二次确认退出
+- **透明背景**：工具不强制背景色，由终端模拟器（Windows Terminal/WezTerm）设置透明度
+- **组件结构**：`ui/App.tsx` + `components/` + `hooks/` + `styles/theme.ts`
 - 自动路由：TTY 终端用 Ink，管道/无 TTY 自动降级轻量 TUI（`tui --legacy`）
 
 ### 关键实现
 - `react-devtools-core` stub（ink 可选依赖，Node 环境不可用）
-- Ink TUI 组件：`packages/cli/src/ui/ink-chat.tsx` + `ink-index.ts`
+- Ink TUI 组件：`packages/cli/src/ui/` 目录下完整组件树
 
 ## 免责声明
 
