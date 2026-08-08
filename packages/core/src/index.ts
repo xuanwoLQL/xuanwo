@@ -22,6 +22,8 @@ export * from "./scan/taint-tracer.js";
 export * from "./scan/indexer.js";
 export * from "./scan/verify.js";
 export * from "./attackchain/builder.js";
+export * from "./ctf/contest-api.js";
+export * from "./ctf/patch-diffing.js";
 export * from "./skills/loader.js";
 export * from "./skills/registry.js";
 export * from "./skills/executor.js";

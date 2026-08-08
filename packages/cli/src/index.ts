@@ -8,6 +8,8 @@ import { runTraceCommand } from "./commands/trace.js";
 import { runChainCommand } from "./commands/chain.js";
 import { runVerifyCommand } from "./commands/verify.js";
 import { runCodeCommand } from "./commands/code.js";
+import { runHuntCommand } from "./commands/hunt.js";
+import { runCtfCommand } from "./commands/ctf.js";
 import { runSkillCommand } from "./commands/skill.js";
 import { runMcpCommand } from "./commands/mcp.js";
 import { runTui } from "./ui/index.js";
@@ -43,6 +45,28 @@ program
       process.exit(1);
     }
     await runCodeCommand(args, opts);
+  });
+
+program
+  .command("ctf <args...>")
+  .description("竞赛平台: login/challenge/submit/status/config")
+  .action(async (args) => {
+    await runCtfCommand(args);
+  });
+
+program
+  .command("hunt <wsl-repo>")
+  .description("Nday 自动挖洞（Patch Diffing）")
+  .option("--module <名>", "模块名")
+  .option("--top <n>", "分析前几个候选", "5")
+  .option("--submit", "提交到平台")
+  .action((repo, opts) => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
+      process.exit(1);
+    }
+    runHuntCommand(repo, opts);
   });
 
 program

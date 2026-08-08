@@ -334,6 +334,30 @@ xuanwo
 - 多策略 edit（借鉴 opencode 9 种替换策略：缩进/空白/行尾容错）
 - 验证：coder 正确添加 subtract/multiply 函数并更新导出（add=3,subtract=2,multiply=12）
 
+## 竞赛模式（Nday 自动挖洞）
+
+### Patch Diffing 引擎（`ctf/patch-diffing.ts`）
+- Nday 核心方法论：`git fetch master → git log v6.0..master → 关键词扫描安全修复`
+- 识别安全修复 commit（fix/security/CVE/UAF/permission/overflow 等关键词打分）
+- 支持 merge commit 的 diff 提取（parent 对比）
+
+### hunt 命令（Nday 自动闭环）
+- `xuanwo hunt <WSL仓库> [--module <名>] [--top <n>]`
+- 流程：扫描修复 → LLM 分析 diff → 输出三级答案（L1 位置 / L2 commit / L3 CWE）
+- 验证：netmanager_base 识别 `权限绕过 CWE-754 @ net_conn_service.cpp:1420`
+
+### ctf 命令（平台交互）
+- `xuanwo ctf login|whoami|challenge|submit|status|config`
+- 认证：`HARMONY_CTF_USERNAME` / `HARMONY_CTF_PASSWORD` / `HARMONY_CTF_BASE_URL`
+- 支持 L1/L2/L3 三级提交 + trackId 管理
+
+### 竞赛方法论（从解题日志提炼）
+1. 拉 master → diff 6.0..master 找安全修复（最有效）
+2. L1 提交 `file:line`（源码根完整相对路径）
+3. L2 提交修复 commit hash
+4. L3 提交 CWE 编号
+5. 提交前 git 交叉验证（wrongAnswerLimit=5 很紧）
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：
