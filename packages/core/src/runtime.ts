@@ -23,6 +23,7 @@ import { SkillExecutor } from "./skills/executor.js";
 import { McpManager } from "./mcp/client.js";
 import { loadMcpConfig } from "./mcp/config.js";
 import { resolveResourcePaths } from "./resources.js";
+import { TaintTracer } from "./scan/taint-tracer.js";
 import { createEmptyContext, type AuditContext } from "./agent/audit-context.js";
 
 /**
@@ -63,6 +64,7 @@ export class AgentRuntime {
   readonly skills: SkillRegistry;
   readonly skillExecutor: SkillExecutor;
   readonly mcpManager: McpManager | null;
+  private readonly llm: LlmClient;
 
   private constructor(
     llm: LlmClient,
@@ -79,6 +81,7 @@ export class AgentRuntime {
     this.skills = skills;
     this.skillExecutor = skillExecutor;
     this.mcpManager = mcpManager;
+    this.llm = llm;
     const builtinTools = createBuiltinTools(
       toolExecutor,
       skills,
@@ -178,6 +181,18 @@ export class AgentRuntime {
     runOptions?: import("./agent/react.js").AgentRunOptions
   ) {
     return this.orchestrator.run(task, context, onStep, runOptions);
+  }
+
+  /** 跨函数污点追踪（借鉴 IVAgent 调用链深度 3-5 层） */
+  traceTaint(
+    startFunction: string,
+    startFile: string,
+    taintedVars: string[],
+    sinkHint?: string,
+    options?: import("./scan/taint-tracer.js").TaintTracerOptions
+  ) {
+    const tracer = new TaintTracer(this.llm, this.orchestrator.getTools(), options);
+    return tracer.trace(startFunction, startFile, taintedVars, sinkHint);
   }
 
   availableAgents(): { id: string; name: string; role: string; description: string; whenToUse?: string }[] {

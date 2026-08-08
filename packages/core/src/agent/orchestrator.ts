@@ -54,6 +54,11 @@ export class AgentOrchestrator {
     return [...this.tools.keys()];
   }
 
+  /** 获取工具 map（供 TaintTracer 等使用） */
+  getTools(): Map<string, AgentTool> {
+    return this.tools;
+  }
+
   hasAgent(id: string): boolean {
     return this.agents.has(id);
   }

@@ -4,6 +4,7 @@ import { runAgentCommand } from "./commands/agent.js";
 import { runKnowledgeCommand } from "./commands/knowledge.js";
 import { runSessionCommand, runResumeCommand } from "./commands/session.js";
 import { runScanCommand, runAnalyzeCommand, runReportCommand } from "./commands/scan.js";
+import { runTraceCommand } from "./commands/trace.js";
 import { runSkillCommand } from "./commands/skill.js";
 import { runMcpCommand } from "./commands/mcp.js";
 import { runTui } from "./ui/index.js";
@@ -109,6 +110,21 @@ program
       process.exit(1);
     }
     runAnalyzeCommand(file);
+  });
+
+program
+  .command("trace <file> <func>")
+  .description("跨函数污点追踪")
+  .option("--var <vars>", "污点变量（逗号分隔）")
+  .option("--sink <hint>", "期望汇点提示")
+  .option("--depth <n>", "最大追踪深度")
+  .action((file, func, opts) => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
+      process.exit(1);
+    }
+    runTraceCommand(file, func, opts);
   });
 
 program

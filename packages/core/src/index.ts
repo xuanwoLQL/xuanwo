@@ -15,6 +15,7 @@ export * from "./knowledge/retriever.js";
 export * from "./knowledge/summary.js";
 export * from "./scan/engine.js";
 export * from "./scan/taint.js";
+export * from "./scan/taint-tracer.js";
 export * from "./skills/loader.js";
 export * from "./skills/registry.js";
 export * from "./skills/executor.js";

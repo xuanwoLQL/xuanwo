@@ -270,6 +270,17 @@ packages/resources/skills/
 - 端到端 scan：确认 2 个高置信度可疑点（栈溢出 conf=0.95、越界写 conf=0.95）
 - 污点规则：napi-audit(4源6汇) + ohos-taint(18源10汇)
 
+### 跨函数污点追踪（`scan/taint-tracer.ts`）
+- 借鉴 IVAgent 调用链深度 3-5 层策略
+- LLM 驱动逐层分析：识别污点传播 → find_function_def/find_callers 跨函数跳转
+- 特性：循环检测、深度限制、污点变量状态追踪、汇点识别
+- CLI：`xuanwo trace <file> <func> [--var <污点>] [--sink <汇点>] [--depth <n>]`
+
+### 验证（真实 OpenHarmony 源码）
+- 3 层测试链：`handle_external → process_data → final_write(strcpy)` 完整追踪
+- **WSL 真实源码**：`CmdSetProcSysNet`（netmanager）IPC 污点 → `/proc/sys/net` 写入汇点，识别真实攻击面
+- 与知识库 16 条 netmanager 模式可交叉验证
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：
