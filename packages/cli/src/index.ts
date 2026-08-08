@@ -2,6 +2,8 @@ import { Command } from "commander";
 import { ConfigManager, runSetup, DISCLAIMER } from "@xuanwo/core";
 import { runAgentCommand } from "./commands/agent.js";
 import { runKnowledgeCommand } from "./commands/knowledge.js";
+import { runSessionCommand, runResumeCommand } from "./commands/session.js";
+import { runTui } from "./ui/index.js";
 
 const program = new Command();
 
@@ -99,9 +101,28 @@ program
 
 program
   .command("resume <session-id>")
-  .description("恢复历史会话")
-  .action(() => {
-    console.log("会话恢复功能将在阶段五提供");
+  .description("恢复历史会话（断点续扫）")
+  .action((sessionId) => {
+    runResumeCommand(sessionId);
+  });
+
+program
+  .command("session <action> [id]")
+  .description("会话管理: list | save <id> | load <id>")
+  .action((action, id) => {
+    runSessionCommand(action, id);
+  });
+
+program
+  .command("tui")
+  .description("启动交互式 TUI（/scan /analyze /nday /knowledge 等）")
+  .action(async () => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
+      process.exit(1);
+    }
+    await runTui();
   });
 
 program.parse();

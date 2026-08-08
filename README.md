@@ -105,6 +105,33 @@ OpenHarmony AI 漏洞挖掘命令行工具（基于 OpenCode 架构定制）
 - 文件归属映射（process.cpp→arkcompiler/ets_runtime）、ecmascript→arkcompiler 等
 - `scripts/rebuild-knowledge.js`：规范化后重建稳定 id + 去重
 
+## 第五阶段：TUI + 快捷命令 + 会话持久化（已完成）
+
+### 轻量 TUI（零重型依赖）
+- 基于 readline + ANSI 转义，跨平台（含 Windows）可靠
+- 状态栏：模式 / 子智能体 / 可疑点计数 / 已分析文件数
+- 快捷键：`Ctrl+P` 命令面板、`Ctrl+T` 变体切换、`Tab` 智能体切换、`Esc`
+- 启动：`xuanwo tui`
+
+### 快捷命令
+| 命令 | 功能 |
+|:---|:---|
+| `/scan <path>` | 主控智能体扫描源码目录 |
+| `/analyze <file>` | 深度分析单个文件（调度子智能体） |
+| `/nday` | Nday 学习模式（知识库统计） |
+| `/report` | 审计报告 |
+| `/knowledge <q>` | RAG 检索知识库 |
+| `/session list` | 会话管理 |
+| `/status` | 查看状态（模式/知识库/智能体） |
+
+### 会话持久化
+- `~/.xuanwo/sessions/*.json`（跨平台 homedir）
+- CLI：`xuanwo session list|save|load`、`xuanwo resume <id>`
+- 断点续扫：resume 打印上下文（已分析文件/可疑点/分析链），可继续 agent 任务
+
+### 关键技术决策
+- **放弃 ink TUI**：依赖 top-level await + react-devtools-core，CJS 打包失败、体积大、Windows 兼容风险 → 改用 readline + ANSI 轻量方案
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

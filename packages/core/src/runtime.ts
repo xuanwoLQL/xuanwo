@@ -16,6 +16,7 @@ import { KnowledgeBase } from "./knowledge/knowledge.js";
 import { buildKnowledgeSummary } from "./knowledge/summary.js";
 import { ConfigManager } from "./security/config.js";
 import { CredentialManager } from "./security/credentials.js";
+import { SessionManager } from "./session/session.js";
 import type { AuditContext } from "./agent/audit-context.js";
 
 /**
@@ -118,5 +119,15 @@ export class AgentRuntime {
 
   availableAgents(): { id: string; name: string; role: string; description: string }[] {
     return this.orchestrator.listAgents();
+  }
+
+  private sessionMgr = new SessionManager();
+
+  sessionList() {
+    return this.sessionMgr.list();
+  }
+
+  createSession(title: string, agentId: string) {
+    return this.sessionMgr.create(title, agentId);
   }
 }

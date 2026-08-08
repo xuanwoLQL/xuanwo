@@ -3,7 +3,7 @@
  * 序列化到 ~/.xuanwo/sessions/
  */
 import { homedir } from "node:os";
-import { join, dirname } from "node:path";
+import { join } from "node:path";
 import { mkdirSync, writeFileSync, readFileSync, existsSync, readdirSync } from "node:fs";
 import { createEmptyContext, type AuditContext } from "../agent/audit-context.js";
 
@@ -75,6 +75,4 @@ export class SessionManager {
       analyzedFiles: [],
     };
   }
-
-  static dirname = dirname; // 保留路径工具引用（避免未用导入告警）
 }
