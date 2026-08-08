@@ -24,6 +24,7 @@ import { McpManager } from "./mcp/client.js";
 import { loadMcpConfig } from "./mcp/config.js";
 import { resolveResourcePaths } from "./resources.js";
 import { TaintTracer } from "./scan/taint-tracer.js";
+import { buildAttackChain } from "./attackchain/builder.js";
 import { createEmptyContext, type AuditContext } from "./agent/audit-context.js";
 
 /**
@@ -193,6 +194,11 @@ export class AgentRuntime {
   ) {
     const tracer = new TaintTracer(this.llm, this.orchestrator.getTools(), options);
     return tracer.trace(startFunction, startFile, taintedVars, sinkHint);
+  }
+
+  /** 从审计结果构建攻击链（借鉴 CyberStrikeAI attackchain） */
+  buildChain(input: import("./attackchain/builder.js").ChainBuildInput) {
+    return buildAttackChain(this.llm, input);
   }
 
   availableAgents(): { id: string; name: string; role: string; description: string; whenToUse?: string }[] {

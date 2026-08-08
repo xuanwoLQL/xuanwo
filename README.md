@@ -281,6 +281,14 @@ packages/resources/skills/
 - **WSL 真实源码**：`CmdSetProcSysNet`（netmanager）IPC 污点 → `/proc/sys/net` 写入汇点，识别真实攻击面
 - 与知识库 16 条 netmanager 模式可交叉验证
 
+### 攻击链建模（`attackchain/builder.ts`，借鉴 CyberStrikeAI）
+- LLM 从审计结果（可疑点+情报+目标）单次生成**树状攻击链**
+- 节点类型：target（目标）/ action（攻击步骤）/ vulnerability（漏洞）
+- 因果边：leads-to / discovers / exploits / enables，支持分支汇聚
+- risk_score 标注（critical=10 / high=8 / medium=5 / low=2）
+- CLI：`xuanwo chain <file> [--module <m>]`，ASCII 可视化 + JSON 保存
+- 验证：8 节点 7 边攻击链，从 JS 入口 → 命令注入 + 缓冲区溢出双分支
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

@@ -5,6 +5,7 @@ import { runKnowledgeCommand } from "./commands/knowledge.js";
 import { runSessionCommand, runResumeCommand } from "./commands/session.js";
 import { runScanCommand, runAnalyzeCommand, runReportCommand } from "./commands/scan.js";
 import { runTraceCommand } from "./commands/trace.js";
+import { runChainCommand } from "./commands/chain.js";
 import { runSkillCommand } from "./commands/skill.js";
 import { runMcpCommand } from "./commands/mcp.js";
 import { runTui } from "./ui/index.js";
@@ -132,6 +133,20 @@ program
   .description("查看审计报告")
   .action((file) => {
     runReportCommand(file);
+  });
+
+program
+  .command("chain <file>")
+  .description("从审计结果生成攻击链（借鉴 CyberStrikeAI）")
+  .option("--module <m>", "目标模块")
+  .option("--from-report <path>", "从 JSON 报告读取")
+  .action((file, opts) => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
+      process.exit(1);
+    }
+    runChainCommand(file, opts);
   });
 
 program
