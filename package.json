@@ -1,0 +1,28 @@
+{
+  "name": "xuanwo",
+  "version": "0.1.0",
+  "description": "OpenHarmony AI 漏洞挖掘命令行工具（基于 OpenCode 架构定制）",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "esbuild packages/cli/src/index.ts --bundle --platform=node --format=cjs --outfile=dist/xuanwo.cjs --external:keytar --alias:@xuanwo/core=./packages/core/src/index.ts --tsconfig=tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "prototype:extract": "node scripts/extract-knowledge.js",
+    "prototype:tool-executor": "node scripts/prototype-tool-executor.js",
+    "prototype:sea": "node scripts/prototype-sea.js"
+  },
+  "dependencies": {
+    "commander": "^12.0.0",
+    "keytar": "^7.9.0",
+    "openai": "^7.4.0",
+    "tiktoken": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}

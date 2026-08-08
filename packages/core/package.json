@@ -1,0 +1,19 @@
+{
+  "name": "@xuanwo/core",
+  "version": "0.1.0",
+  "description": "xuanwo 核心引擎：智能体、LLM 抽象、ToolExecutor、知识库、会话、安全",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint src --ext .ts"
+  },
+  "dependencies": {
+    "tiktoken": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

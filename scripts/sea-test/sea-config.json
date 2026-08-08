@@ -1,0 +1,7 @@
+{
+  "main": "bundle.cjs",
+  "output": "xuanwo-sea.exe",
+  "disableExperimentalSEAWarning": true,
+  "useSnapshot": false,
+  "useCodeCache": true
+}

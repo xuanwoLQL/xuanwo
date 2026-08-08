@@ -1,0 +1,104 @@
+import { Command } from "commander";
+import { ConfigManager, runSetup, DISCLAIMER } from "@xuanwo/core";
+import { runAgentCommand } from "./commands/agent.js";
+
+const program = new Command();
+
+program
+  .name("xuanwo")
+  .description("OpenHarmony AI 漏洞挖掘命令行工具")
+  .version("0.1.0");
+
+program
+  .command("agent <args...>")
+  .description("运行智能体: xuanwo agent <agent-id> \"任务\" 或 xuanwo agent list")
+  .option("--max-steps <n>", "最大 ReAct 迭代数")
+  .action(async (args, opts) => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
+      process.exit(1);
+    }
+    await runAgentCommand(args, opts);
+  });
+
+program
+  .command("setup")
+  .description("首次设置向导（免责声明 + API Key + 默认模型 + 授权目录）")
+  .action(async () => {
+    const result = await runSetup();
+    if (!result.accepted) {
+      console.log("未接受免责声明，退出。");
+      process.exit(1);
+    }
+    console.log(`提供商: ${result.provider}\n默认模型: ${result.model}`);
+    if (result.baseUrl) console.log(`Base URL: ${result.baseUrl}`);
+    console.log(`授权目录: ${result.authorizedPaths.length ? result.authorizedPaths.join(", ") : "（无，可后续添加）"}`);
+  });
+
+program
+  .command("config")
+  .description("查看或编辑配置（授权路径 / 免责声明）")
+  .option("--show", "显示当前配置")
+  .option("--authorize <path>", "添加授权目录")
+  .option("--accept", "确认接受免责声明")
+  .option("--check <path>", "检查路径是否已授权")
+  .action(async (opts) => {
+    const cfg = new ConfigManager();
+    if (opts.accept) {
+      cfg.setAccepted();
+      console.log("已确认接受免责声明。");
+    }
+    if (opts.authorize) {
+      cfg.addAuthorizedPath(opts.authorize);
+      console.log(`已添加授权目录: ${opts.authorize}`);
+    }
+    if (opts.check) {
+      const ok = cfg.isAuthorized(opts.check);
+      console.log(`路径 "${opts.check}" ${ok ? "已授权 ✅" : "未授权 ❌"}`);
+    }
+    if (opts.show || (!opts.accept && !opts.authorize && !opts.check)) {
+      console.log(JSON.stringify(cfg.get(), null, 2));
+    }
+  });
+
+program
+  .command("knowledge")
+  .description("知识库管理")
+  .option("--update --log <path>", "从日志重新解析并合并模式")
+  .option("--list", "列出已加载模式")
+  .action((opts) => {
+    if (opts.list) {
+      console.log("知识库列表功能将在阶段四提供");
+    }
+    if (opts.log) {
+      console.log(`知识库更新功能将在阶段四提供 (log=${opts.log})`);
+    }
+  });
+
+program
+  .command("scan <path>")
+  .description("启动源码扫描")
+  .action((path) => {
+    const cfg = new ConfigManager();
+    if (!cfg.requireAccepted()) {
+      console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
+      process.exit(1);
+    }
+    if (!cfg.isAuthorized(path)) {
+      console.log(`❌ 路径未授权: ${path}`);
+      console.log(`   请运行: xuanwo config --authorize "${path}"`);
+      console.log("   或设置环境变量 XUANWO_AUTHORIZED_TARGET");
+      process.exit(1);
+    }
+    console.log(`扫描功能将在阶段六提供 (${path})`);
+  });
+
+program
+  .command("resume <session-id>")
+  .description("恢复历史会话")
+  .action(() => {
+    console.log("会话恢复功能将在阶段五提供");
+  });
+
+program.parse();
