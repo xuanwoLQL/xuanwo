@@ -13,6 +13,14 @@ export interface SkillConfig {
   tools: string[];
   body: string;
   sourcePath: string;
+  /** 污点源 API（借鉴 IVAgent taint_sources） */
+  taintSources?: string[];
+  /** 危险 API 汇点（借鉴 IVAgent dangerous_apis） */
+  dangerousApis?: string[];
+  /** 入口点 */
+  entryPoints?: string[];
+  /** 污点规则对应的漏洞类型 */
+  vulnerabilityType?: string;
 }
 
 /** 解析技能：从 SKILL.md 提取 frontmatter + 主体 */
@@ -34,6 +42,10 @@ export function parseSkillFile(filePath: string, ctx: TemplateContext): SkillCon
     tools: Array.isArray(meta.tools) ? (meta.tools as string[]) : [],
     body,
     sourcePath: filePath,
+    taintSources: Array.isArray(meta.taint_sources) ? (meta.taint_sources as string[]) : undefined,
+    dangerousApis: Array.isArray(meta.dangerous_apis) ? (meta.dangerous_apis as string[]) : undefined,
+    entryPoints: Array.isArray(meta.entry_points) ? (meta.entry_points as string[]) : undefined,
+    vulnerabilityType: meta.vulnerability_type ? String(meta.vulnerability_type) : undefined,
   };
 }
 

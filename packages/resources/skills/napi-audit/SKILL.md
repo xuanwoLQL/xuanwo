@@ -3,6 +3,22 @@ id: napi-audit
 name: NAPI 接口审计指南
 description: NAPI（Node-API）接口安全审计方法，覆盖参数校验、内存安全、引用管理、数据流追踪
 tools: [grep, read]
+vulnerability_type: 缓冲区溢出
+taint_sources:
+  - "napi_get_cb_info"
+  - "napi_get_value_string_utf8"
+  - "napi_get_value_array_length"
+  - "napi_get_value_int"
+dangerous_apis:
+  - "memcpy"
+  - "strcpy"
+  - "strncpy"
+  - "sprintf"
+  - "snprintf"
+  - "memmove"
+entry_points:
+  - "napi_set_named_property"
+  - "napi_create_function"
 ---
 
 # NAPI 接口审计指南

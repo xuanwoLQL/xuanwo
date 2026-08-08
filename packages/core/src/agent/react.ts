@@ -170,11 +170,18 @@ ${toolDesc || "- 无工具（仅推理）"}
 
       let step: { thought: string; action: { tool: string; input: unknown } };
       try {
-        const raw = extractJson(resp.content);
+        const content = resp.content?.trim();
+        if (!content) {
+          // 模型返回空内容（deepseek reasoning 模型可能 content 为空）
+          options.onStep?.({ type: "observe", content: "模型返回空内容，请求重试" });
+          messages.push({ role: "user", content: "你上次返回了空内容。请直接输出 JSON: {\"thought\":\"...\",\"action\":{\"tool\":\"...\",\"input\":{...}}}。若已完成分析请使用 tool:\"final\"。" });
+          continue;
+        }
+        const raw = extractJson(content);
         const parsed = raw as { thought?: string; action?: { tool?: string; input?: unknown } } | null;
         // 防御性校验：兼容模型输出缺少 action 的情况
         if (!parsed || typeof parsed !== "object" || !parsed.action?.tool) {
-          options.onStep?.({ type: "observe", content: `模型输出缺少 action 字段，原始: ${resp.content.slice(0, 300)}` });
+          options.onStep?.({ type: "observe", content: `模型输出缺少 action 字段，原始: ${content.slice(0, 300)}` });
           messages.push({ role: "user", content: `输出格式错误：缺少 action。必须输出 {"thought":"...","action":{"tool":"..."}}。请重试。` });
           continue;
         }
@@ -183,7 +190,9 @@ ${toolDesc || "- 无工具（仅推理）"}
           action: { tool: parsed.action.tool, input: parsed.action.input },
         };
       } catch {
-        options.onStep?.({ type: "observe", content: `无法解析模型输出，重试。原始: ${resp.content.slice(0, 200)}` });
+        options.onStep?.({ type: "observe", content: `无法解析模型输出，重试。原始: ${resp.content?.slice(0, 200)}` });
+        // 向模型反馈解析失败，帮助纠正
+        messages.push({ role: "user", content: "你的输出无法解析为合法 JSON。请严格只输出一个 JSON 对象，不要包含 markdown 围栏或额外文字。" });
         continue;
       }
 

@@ -28,10 +28,22 @@ export interface TemplateContext {
 
 const FRONTMATTER_RE = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/;
 
-/** 简易 YAML frontmatter 解析（仅处理扁平键值 + 数组） */
+/** 简易 YAML frontmatter 解析（扁平键值 + 单行数组 + 块状列表） */
 export function parseFrontmatter(yaml: string): Record<string, unknown> {
   const out: Record<string, unknown> = {};
-  for (const line of yaml.split(/\r?\n/)) {
+  const lines = yaml.split(/\r?\n/);
+  let listKey: string | null = null;
+
+  for (const line of lines) {
+    // 块状列表项：- item
+    const listMatch = line.match(/^\s*-\s+(.+)$/);
+    if (listMatch && listKey) {
+      const arr = (out[listKey] as string[]) ?? [];
+      arr.push(listMatch[1].replace(/^['"]|['"]$/g, ""));
+      out[listKey] = arr;
+      continue;
+    }
+    listKey = null;
     const m = line.match(/^([A-Za-z0-9_-]+):\s*(.*)$/);
     if (!m) continue;
     const key = m[1];
@@ -42,6 +54,10 @@ export function parseFrontmatter(yaml: string): Record<string, unknown> {
         .split(",")
         .map((s) => s.trim().replace(/^['"]|['"]$/g, ""))
         .filter(Boolean);
+    } else if (val === "") {
+      // 块状列表开始
+      out[key] = [];
+      listKey = key;
     } else if (val === "true") {
       out[key] = true;
     } else if (val === "false") {

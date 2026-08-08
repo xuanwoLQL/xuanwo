@@ -6,6 +6,7 @@ import { readdirSync, statSync, readFileSync } from "node:fs";
 import { join, extname } from "node:path";
 import type { AgentRuntime } from "../runtime.js";
 import type { SuspiciousPoint, IntelEntry } from "../agent/audit-context.js";
+import { aggregateTaintScan, formatTaintCandidates, type TaintRule } from "./taint.js";
 
 const SOURCE_EXTS = new Set([
   ".c", ".cpp", ".cc", ".h", ".hpp", ".java",
@@ -122,7 +123,8 @@ export async function runScan(
   runtime: AgentRuntime,
   target: string,
   options: ScanOptions = {},
-  onProgress?: (p: ScanProgress) => void
+  onProgress?: (p: ScanProgress) => void,
+  taintRules: TaintRule[] = []
 ): Promise<ScanReport> {
   const maxFiles = options.maxFiles ?? 30;
   const concurrency = options.concurrency ?? 3;
@@ -140,6 +142,31 @@ export async function runScan(
     return rb - ra;
   });
 
+  // 阶段2.5：污点预扫描（借鉴 IVAgent，纯静态规则，不耗 LLM）
+  const taintCandidates = new Map<string, ReturnType<typeof aggregateTaintScan>>();
+  if (taintRules.length > 0) {
+    onProgress?.({ totalFiles: files.length, analyzed: 0 });
+    for (const f of files) {
+      try {
+        const content = readFileSync(f.path, "utf8");
+        const cands = aggregateTaintScan(f.path, content, taintRules);
+        if (cands.length > 0) taintCandidates.set(f.path, cands);
+      } catch {
+        /* 忽略不可读文件 */
+      }
+    }
+    // 有污点候选的文件排最前
+    prioritized.sort((a, b) => {
+      const ca = taintCandidates.get(a.path)?.length ?? 0;
+      const cb = taintCandidates.get(b.path)?.length ?? 0;
+      return cb - ca;
+    });
+    if (taintCandidates.size > 0) {
+      const total = [...taintCandidates.values()].reduce((s, c) => s + c.length, 0);
+      console.log(`污点预扫描: ${taintCandidates.size} 个文件命中 ${total} 条候选路径`);
+    }
+  }
+
   // 阶段3：对选中的文件做深度分析
   const analyzeTargets = prioritized.slice(0, options.maxFiles ?? 10);
   const points: SuspiciousPoint[] = [];
@@ -150,10 +177,17 @@ export async function runScan(
   await mapLimit(analyzeTargets, concurrency, async (f) => {
     onProgress?.({ totalFiles: analyzeTargets.length, analyzed, currentFile: f.path });
     const signals = riskMap.get(f.path);
+    const taints = taintCandidates.get(f.path);
     try {
-      const task = signals?.length
-        ? `对文件 ${f.path} 进行 0day 漏洞挖掘。该文件含高风险特征: ${signals.join(", ")}。请结合知识库模式分析所有可疑点，输出 suspiciousPoints 并给出 file:line。使用 add_intel 记录发现的入口点/数据流情报。`
-        : `对文件 ${f.path} 进行快速安全检查，输出发现的 suspiciousPoints 或空数组。使用 add_intel 记录入口点情报。`;
+      let task: string;
+      if (taints && taints.length > 0) {
+        // 污点预扫描命中：让 LLM 深度确认这些候选路径
+        task = `对文件 ${f.path} 进行 0day 漏洞挖掘。污点预扫描发现 ${taints.length} 条候选路径，请逐一确认是否构成真实漏洞（确认污点数据是否未经校验到达危险API），对确认的输入 suspiciousPoints 并给出 file:line 和证据。\n\n${formatTaintCandidates(taints)}`;
+      } else if (signals?.length) {
+        task = `对文件 ${f.path} 进行 0day 漏洞挖掘。该文件含高风险特征: ${signals.join(", ")}。请结合知识库模式分析所有可疑点，输出 suspiciousPoints 并给出 file:line。使用 add_intel 记录发现的入口点/数据流情报。`;
+      } else {
+        task = `对文件 ${f.path} 进行快速安全检查，输出发现的 suspiciousPoints 或空数组。使用 add_intel 记录入口点情报。`;
+      }
       const { context } = await runtime.runTask(task, {
         targetFile: f.path,
         targetModule: moduleOf(f.path),

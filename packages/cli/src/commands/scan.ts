@@ -42,7 +42,8 @@ export async function runScanCommand(path: string, opts: { maxFiles?: string; co
     { maxFiles, concurrency },
     (p) => {
       process.stdout.write(`\r${renderProgress(p)}   `);
-    }
+    },
+    runtime.skills.toTaintRules()
   );
   process.stdout.write("\n");
 

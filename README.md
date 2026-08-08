@@ -245,6 +245,31 @@ packages/resources/skills/
 - `react-devtools-core` stub（ink 可选依赖，Node 环境不可用）
 - Ink TUI 组件：`packages/cli/src/ui/` 目录下完整组件树
 
+## 成熟化：借鉴 IVAgent 污点分析引擎（已完成）
+
+### 污点预扫描引擎（`scan/taint.ts`）
+- 借鉴 IVAgent 的 `taint_sources` + `dangerous_apis` 机制
+- 技能 SKILL.md 结构化声明污点源/危险API/入口点（块状 YAML 列表解析）
+- 纯静态扫描：在源码中定位"污点源→危险API"共现路径，零 LLM 调用
+- 输出候选 {file, line, source, sink, distance, sameScope}
+- scan 流程：污点预扫描命中 → 候选喂给 LLM 深度确认 → 高置信度可疑点
+
+### OpenHarmony 污点技能（`ohos-taint`）
+- 移植 IVAgent harmony_entry + arkts_ability_hijack 的污点源：
+  - C++ 层：want 参数、IPC ReadString/ReadBuffer、OnRemoteRequest
+  - ArkTS 层：router.getParams、want.parameters、AppStorage/PersistentStorage
+- 危险汇点：memcpy/strcpy/sprintf、权限校验、startAbility/router.pushUrl
+
+### 代码探索工具（借鉴 IVAgent get_function_def/get_callee）
+- `find_function_def`：定位函数定义
+- `find_callers`：查找函数调用者
+- 支持本地 + WSL 路径
+
+### 关键验证
+- 测试文件污点预扫描：`getStringParam → strcpy` 3行距离同作用域命中（零 LLM）
+- 端到端 scan：确认 2 个高置信度可疑点（栈溢出 conf=0.95、越界写 conf=0.95）
+- 污点规则：napi-audit(4源6汇) + ohos-taint(18源10汇)
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

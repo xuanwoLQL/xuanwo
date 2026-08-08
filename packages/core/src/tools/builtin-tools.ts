@@ -8,6 +8,7 @@ import { join, resolve } from "node:path";
 import type { ToolExecutor } from "./ToolExecutor.js";
 import type { AgentTool } from "../agent/react.js";
 import { createMethodologyTools } from "../agent/methodology.js";
+import { isWslPath, toWslPath, wslReadFile, wslGrep } from "./wsl.js";
 
 /** 纯 JS 递归 grep（不依赖外部命令，规避 Windows 无 rg 问题） */
 function grepTree(
@@ -76,6 +77,12 @@ export function createBuiltinTools(
         const path = String(args.path ?? "");
         if (!path) return "错误: 缺少 path 参数";
         try {
+          // WSL 路径走 wsl 通道
+          if (isWslPath(path)) {
+            const wslPath = toWslPath(path);
+            const f = wslReadFile(wslPath);
+            return f.content + (f.truncated ? "\n...（已截断）" : "");
+          }
           const abs = toolExecutor.checkPath(path);
           if (!existsSync(abs)) return `错误: 文件不存在 ${abs}`;
           const content = readFileSync(abs, "utf8");
@@ -105,6 +112,11 @@ export function createBuiltinTools(
         const include = args.include ? String(args.include) : undefined;
         if (!pattern || !path) return "错误: 缺少 pattern 或 path";
         try {
+          if (isWslPath(path)) {
+            const wslPath = toWslPath(path);
+            const hits = wslGrep(wslPath, pattern, include, 50);
+            return hits.length ? hits.join("\n") : "无匹配";
+          }
           const abs = toolExecutor.checkPath(path);
           let re: RegExp;
           try {
@@ -150,5 +162,82 @@ export function createBuiltinTools(
   if (contextBridge) {
     tools.push(...createMethodologyTools(contextBridge.getContext, contextBridge.setContext));
   }
+
+  // 代码探索工具（借鉴 IVAgent get_function_def/get_callee）
+  tools.push({
+    definition: {
+      name: "find_function_def",
+      description: "在源码中查找函数的定义位置。参数: {func: string, path: string, maxResults?: number}",
+      parameters: {
+        type: "object",
+        properties: {
+          func: { type: "string" },
+          path: { type: "string" },
+          maxResults: { type: "number" },
+        },
+        required: ["func", "path"],
+      },
+    },
+    execute: async (args) => {
+      const func = String(args.func ?? "");
+      const path = String(args.path ?? "");
+      if (!func || !path) return "错误: 缺少 func 或 path";
+      try {
+        // 构造函数签名匹配：函数名后跟 ( 且前一行或本行是返回类型
+        const pattern = `(?:^|\\n)(?:[A-Za-z_][\\w:<>*& ]*\\s+)?${escapeRe(func)}\\s*\\(`;
+        const maxResults = Number(args.maxResults ?? 5);
+        if (isWslPath(path)) {
+          const wslPath = toWslPath(path);
+          const hits = wslGrep(wslPath, `\\b${escapeRe(func)}\\s*\\(`, undefined, maxResults);
+          return hits.length ? hits.join("\n") : `未找到函数 ${func} 的定义`;
+        }
+        const abs = toolExecutor.checkPath(path);
+        const re = new RegExp(pattern, "g");
+        const matches = grepTree(abs, re, /\.(c|cpp|cc|h|hpp)$/, maxResults);
+        return matches.length ? matches.join("\n") : `未找到函数 ${func} 的定义`;
+      } catch (e) {
+        return `错误: ${(e as Error).message}`;
+      }
+    },
+  });
+  tools.push({
+    definition: {
+      name: "find_callers",
+      description: "查找调用某函数的所有位置。参数: {func: string, path: string, maxResults?: number}",
+      parameters: {
+        type: "object",
+        properties: {
+          func: { type: "string" },
+          path: { type: "string" },
+          maxResults: { type: "number" },
+        },
+        required: ["func", "path"],
+      },
+    },
+    execute: async (args) => {
+      const func = String(args.func ?? "");
+      const path = String(args.path ?? "");
+      if (!func || !path) return "错误: 缺少 func 或 path";
+      try {
+        const maxResults = Number(args.maxResults ?? 10);
+        if (isWslPath(path)) {
+          const wslPath = toWslPath(path);
+          const hits = wslGrep(wslPath, `\\b${escapeRe(func)}\\s*\\(`, undefined, maxResults);
+          return hits.length ? hits.join("\n") : `未找到 ${func} 的调用者`;
+        }
+        const abs = toolExecutor.checkPath(path);
+        const re = new RegExp(`\\b${escapeRe(func)}\\s*\\(`, "g");
+        const matches = grepTree(abs, re, /\.(c|cpp|cc|h|hpp)$/, maxResults);
+        return matches.length ? matches.join("\n") : `未找到 ${func} 的调用者`;
+      } catch (e) {
+        return `错误: ${(e as Error).message}`;
+      }
+    },
+  });
   return tools;
+}
+
+/** 转义正则特殊字符 */
+function escapeRe(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

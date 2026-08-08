@@ -3,6 +3,7 @@
  * 将技能注册为可发现资源，供智能体提示词注入和按需加载。
  */
 import type { SkillConfig } from "./loader.js";
+import type { TaintRule } from "../scan/taint.js";
 
 export interface DiscoverableSkill {
   id: string;
@@ -76,5 +77,21 @@ export class SkillRegistry {
 
   getRejected(): { file: string; reason: string }[] {
     return this.rejected;
+  }
+
+  /** 将技能转换为污点规则（借鉴 IVAgent taint_sources/dangerous_apis） */
+  toTaintRules(): TaintRule[] {
+    const rules: TaintRule[] = [];
+    for (const s of this.skills.values()) {
+      if (s.taintSources && s.dangerousApis) {
+        rules.push({
+          sources: s.taintSources,
+          sinks: s.dangerousApis,
+          entryPoints: s.entryPoints,
+          vulnerabilityType: s.vulnerabilityType ?? s.id,
+        });
+      }
+    }
+    return rules;
   }
 }
