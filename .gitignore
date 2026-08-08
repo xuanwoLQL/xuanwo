@@ -13,3 +13,9 @@ data/logs/*
 .env
 *.log
 .DS_Store
+
+# CyberStrike 参考（90MB，不入库）
+reference/
+CyberStrike-1.1.15.zip
+
+opencode-1.18.15.zip

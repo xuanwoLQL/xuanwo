@@ -5,6 +5,7 @@ export * from "./agent/audit-context.js";
 export * from "./agent/config.js";
 export * from "./agent/react.js";
 export * from "./agent/orchestrator.js";
+export * from "./agent/methodology.js";
 export * from "./llm/client.js";
 export * from "./tools/ToolExecutor.js";
 export * from "./tools/builtin-tools.js";

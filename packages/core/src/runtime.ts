@@ -23,7 +23,7 @@ import { SkillExecutor } from "./skills/executor.js";
 import { McpManager } from "./mcp/client.js";
 import { loadMcpConfig } from "./mcp/config.js";
 import { resolveResourcePaths } from "./resources.js";
-import type { AuditContext } from "./agent/audit-context.js";
+import { createEmptyContext, type AuditContext } from "./agent/audit-context.js";
 
 /**
  * 解析 API Key：优先级
@@ -79,7 +79,14 @@ export class AgentRuntime {
     this.skills = skills;
     this.skillExecutor = skillExecutor;
     this.mcpManager = mcpManager;
-    const builtinTools = createBuiltinTools(toolExecutor, skills);
+    const builtinTools = createBuiltinTools(
+      toolExecutor,
+      skills,
+      {
+        getContext: () => createEmptyContext(),
+        setContext: () => {},
+      }
+    );
     this.orchestrator = new AgentOrchestrator(llm, agents, builtinTools);
     // 注册 MCP 工具
     if (mcpManager) {
@@ -131,14 +138,23 @@ export class AgentRuntime {
 
     // 生成模板上下文（含技能摘要，作为可发现资源）
     const knowledgeSummary = buildKnowledgeSummary(knowledge.all(), cfg.authorizedTarget ?? "");
-    const templateCtx = {
+    const baseCtx = {
       DEFAULT_MODEL: cfg.defaultModel || "deepseek-v4-flash",
       KNOWLEDGE_SUMMARY: knowledgeSummary,
       AVAILABLE_SKILLS: skills.summaryText(),
+      SKILL_CONTENT: skills.fullContentText(8000),
     };
 
-    // 加载智能体
-    const agents = [...loadAgentsFromDir(agentsDir, templateCtx).values()];
+    // 加载智能体（第一遍：基础 ctx）
+    let agents = [...loadAgentsFromDir(agentsDir, baseCtx).values()];
+
+    // 第二遍：注入 SUBAGENT_ROSTER（各子智能体 whenToUse 调度依据）后重载
+    const roster = agents
+      .filter((a) => a.id !== "openharmony-hunter")
+      .map((a) => `- ${a.id}: ${a.description}${a.whenToUse ? ` 何时使用: ${a.whenToUse}` : ""}`)
+      .join("\n");
+    const fullCtx = { ...baseCtx, SUBAGENT_ROSTER: roster };
+    agents = [...loadAgentsFromDir(agentsDir, fullCtx).values()];
 
     // 连接 MCP servers（可选，失败不阻塞）
     let mcpManager: McpManager | null = null;
@@ -164,7 +180,7 @@ export class AgentRuntime {
     return this.orchestrator.run(task, context, onStep, runOptions);
   }
 
-  availableAgents(): { id: string; name: string; role: string; description: string }[] {
+  availableAgents(): { id: string; name: string; role: string; description: string; whenToUse?: string }[] {
     return this.orchestrator.listAgents();
   }
 

@@ -26,9 +26,11 @@ subagents: [napi-auditor, ipc-analyzer, race-checker, poc-generator]
    - 已确认漏洞 → poc-generator
 4. **结果汇聚**：整合各子智能体的 suspiciousPoints，去重、排序、给出结论
 
-## 可用技能（可发现资源）
-根据任务类型加载对应技能详情，技能提供了针对性的审计指南：
-{{AVAILABLE_SKILLS}}
+## 可调度的子智能体（whenToUse 决策依据）
+{{SUBAGENT_ROSTER}}
+
+## 可用技能（审计指南，静态注入）
+{{SKILL_CONTENT}}
 
 ## 输出要求
 - 每个结论必须附置信度（0-1）

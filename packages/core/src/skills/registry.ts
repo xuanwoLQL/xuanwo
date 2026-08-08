@@ -55,6 +55,25 @@ export class SkillRegistry {
     return this.skills.get(id)?.body;
   }
 
+  /**
+   * 全部技能正文（借鉴 CyberStrike 静态技能注入）
+   * 将技能审计指南静态内联到 agent 提示词，避免运行时 load_skill 往返。
+   * @param maxChars 上限，防止超 token
+   */
+  fullContentText(maxChars = 8000): string {
+    if (this.skills.size === 0) return "（无可用技能）";
+    const parts: string[] = [];
+    let used = 0;
+    for (const s of this.skills.values()) {
+      const header = `### 技能: ${s.id}（${s.name}）`;
+      const block = `${header}\n${s.body}`;
+      if (used + block.length > maxChars) break;
+      parts.push(block);
+      used += block.length;
+    }
+    return parts.join("\n\n");
+  }
+
   getRejected(): { file: string; reason: string }[] {
     return this.rejected;
   }

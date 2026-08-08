@@ -18,6 +18,10 @@ export interface NdayPattern {
   tags: string[];
   confidence: number;
   needsReview: boolean;
+  /** 可联动成漏洞链的模式（借鉴 CyberStrike chains_with） */
+  chainsWith?: string[];
+  /** 联动时的严重度提升说明 */
+  chainNote?: string;
 }
 
 export interface KnowledgeIndex {

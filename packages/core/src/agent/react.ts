@@ -4,7 +4,8 @@
  */
 import type { LlmClient, ChatMessage, CompletionOptions } from "../llm/client.js";
 import type { AgentConfig } from "./config.js";
-import { dedupePoints, type AuditContext, type SuspiciousPoint } from "./audit-context.js";
+import { dedupePoints, createEmptyContext, type AuditContext, type SuspiciousPoint } from "./audit-context.js";
+import { createMethodologyTools } from "./methodology.js";
 
 export interface ToolDefinition {
   name: string;
@@ -33,7 +34,6 @@ export interface AgentResult {
 }
 
 const REACT_SCHEMA = `你是一个基于 ReAct（Reason-Act-Observe）循环工作的智能体。
-
 严格按以下格式输出每一步（JSON）：
 {"thought":"你的推理","action":{"tool":"工具名或"final"","input":{...}}}
 - 若已能得出结论，action.tool 设为 "final"，input 为 final 对象
@@ -50,14 +50,78 @@ final 对象格式：
 }
 - dispatch 可选：主控智能体需要派发子任务时填写，子智能体填 []`;
 
+/**
+ * 宽松 JSON 提取：从模型输出中提取第一个完整 JSON 对象。
+ * 兼容模型输出包含多余文本/被截断/前后有说明文字的情况。
+ */
+function extractJson(text: string): unknown {
+  const s = text.trim();
+  // 去掉可能的 ```json 围栏
+  const fenced = s.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  try {
+    return JSON.parse(fenced);
+  } catch {
+    /* fallthrough */
+  }
+  // 查找第一个 { 到匹配的 }，处理嵌套
+  const start = fenced.indexOf("{");
+  if (start === -1) throw new Error("no json object");
+  let depth = 0;
+  let inStr = false;
+  let esc = false;
+  for (let i = start; i < fenced.length; i++) {
+    const c = fenced[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (c === "\\") esc = true;
+      else if (c === '"') inStr = false;
+      continue;
+    }
+    if (c === '"') inStr = true;
+    else if (c === "{") depth++;
+    else if (c === "}") {
+      depth--;
+      if (depth === 0) {
+        return JSON.parse(fenced.slice(start, i + 1));
+      }
+    }
+  }
+  throw new Error("incomplete json");
+}
+
 export class ReActAgent {
   private toolCache = new Map<string, string>();
+  private ctxRef: { current: AuditContext } = { current: createEmptyContext() };
+  private tools: Map<string, AgentTool>;
 
   constructor(
     private llm: LlmClient,
-    private tools: Map<string, AgentTool>,
+    baseTools: Map<string, AgentTool>,
     private config: AgentConfig
-  ) {}
+  ) {
+    // 将方法论工具绑定到本 agent 的 ctxRef（contextBridge）
+    this.tools = new Map();
+    for (const [name, tool] of baseTools) {
+      if (name === "add_intel" || name === "coverage_status" || name === "record_coverage") {
+        const bridge = this.contextBridge;
+        // 用 createMethodologyTools 重新创建，绑定当前 ctxRef
+        const bound = createMethodologyTools(bridge.getContext, bridge.setContext);
+        for (const b of bound) this.tools.set(b.definition.name, b);
+      } else {
+        this.tools.set(name, tool);
+      }
+    }
+  }
+
+  /** 供方法论工具访问当前 AuditContext（contextBridge） */
+  get contextBridge(): { getContext: () => AuditContext; setContext: (ctx: AuditContext) => void } {
+    return {
+      getContext: () => this.ctxRef.current,
+      setContext: (ctx: AuditContext) => {
+        this.ctxRef.current = ctx;
+      },
+    };
+  }
 
   private buildSystemPrompt(context: AuditContext): string {
     const toolDesc = [...this.tools.values()]
@@ -95,6 +159,7 @@ ${toolDesc || "- 无工具（仅推理）"}
       ...context,
       analysisStack: [...context.analysisStack, this.config.id],
     };
+    this.ctxRef.current = workingContext;
 
     while (iterations < maxIter) {
       iterations++;
@@ -105,14 +170,18 @@ ${toolDesc || "- 无工具（仅推理）"}
 
       let step: { thought: string; action: { tool: string; input: unknown } };
       try {
-        const parsed = JSON.parse(resp.content);
+        const raw = extractJson(resp.content);
+        const parsed = raw as { thought?: string; action?: { tool?: string; input?: unknown } } | null;
         // 防御性校验：兼容模型输出缺少 action 的情况
-        if (!parsed || typeof parsed !== "object" || !parsed.action) {
+        if (!parsed || typeof parsed !== "object" || !parsed.action?.tool) {
           options.onStep?.({ type: "observe", content: `模型输出缺少 action 字段，原始: ${resp.content.slice(0, 300)}` });
           messages.push({ role: "user", content: `输出格式错误：缺少 action。必须输出 {"thought":"...","action":{"tool":"..."}}。请重试。` });
           continue;
         }
-        step = parsed;
+        step = {
+          thought: parsed.thought ?? "",
+          action: { tool: parsed.action.tool, input: parsed.action.input },
+        };
       } catch {
         options.onStep?.({ type: "observe", content: `无法解析模型输出，重试。原始: ${resp.content.slice(0, 200)}` });
         continue;

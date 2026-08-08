@@ -3,6 +3,7 @@ id: poc-generator
 name: PoC 生成器
 role: 子智能体
 description: 为确认的漏洞生成 PoC
+whenToUse: 有已确认漏洞（含 file:line、调用链、触发条件）需要构造复现代码时使用
 model: "{{DEFAULT_MODEL}}"
 tools: [read, grep, ToolExecutor]
 subagents: []

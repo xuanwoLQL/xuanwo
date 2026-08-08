@@ -3,6 +3,7 @@ id: ipc-analyzer
 name: IPC 通信分析师
 role: 子智能体
 description: 专注 IPC 通信机制的安全分析
+whenToUse: 目标含 OnRemoteRequest、IPC/Binder、Ability 调用、RPC stub、Parcel 序列化时使用
 model: "{{DEFAULT_MODEL}}"
 tools: [read, grep, ToolExecutor]
 subagents: []

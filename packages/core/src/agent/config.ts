@@ -11,6 +11,8 @@ export interface AgentConfig {
   name: string;
   role: string;
   description: string;
+  /** 何时使用该智能体（借鉴 opencode whenToUse，主控调度决策依据） */
+  whenToUse?: string;
   model?: string;
   tools: string[];
   subagents: string[];
@@ -81,6 +83,7 @@ export function parseAgentFile(
     name: String(meta.name ?? id),
     role: String(meta.role ?? "子智能体"),
     description: String(meta.description ?? ""),
+    whenToUse: meta.whenToUse ? renderTemplate(String(meta.whenToUse), ctx) : undefined,
     model: meta.model ? renderTemplate(String(meta.model), ctx) : undefined,
     tools: Array.isArray(meta.tools) ? (meta.tools as string[]) : [],
     subagents: Array.isArray(meta.subagents) ? (meta.subagents as string[]) : [],

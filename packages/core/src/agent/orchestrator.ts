@@ -35,12 +35,13 @@ export class AgentOrchestrator {
     for (const t of tools) this.tools.set(t.definition.name, t);
   }
 
-  listAgents(): { id: string; name: string; role: string; description: string }[] {
+  listAgents(): { id: string; name: string; role: string; description: string; whenToUse?: string }[] {
     return [...this.agents.values()].map((a) => ({
       id: a.id,
       name: a.name,
       role: a.role,
       description: a.description,
+      whenToUse: a.whenToUse,
     }));
   }
 

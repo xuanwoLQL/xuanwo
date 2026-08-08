@@ -47,6 +47,12 @@ export async function runScanCommand(path: string, opts: { maxFiles?: string; co
   process.stdout.write("\n");
 
   console.log(`\n${report.summary}`);
+  if (report.intel.length > 0) {
+    console.log("\n===== 审计情报 =====");
+    report.intel.slice(0, 10).forEach((i) => {
+      console.log(`  [${i.kind}/${i.severity}] ${i.target}: ${i.detail.slice(0, 100)}`);
+    });
+  }
   console.log("\n===== 可疑点 =====");
   if (report.suspiciousPoints.length === 0) {
     console.log("  未发现可疑点");

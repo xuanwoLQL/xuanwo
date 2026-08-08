@@ -5,7 +5,7 @@
 import { readdirSync, statSync, readFileSync } from "node:fs";
 import { join, extname } from "node:path";
 import type { AgentRuntime } from "../runtime.js";
-import type { SuspiciousPoint } from "../agent/audit-context.js";
+import type { SuspiciousPoint, IntelEntry } from "../agent/audit-context.js";
 
 const SOURCE_EXTS = new Set([
   ".c", ".cpp", ".cc", ".h", ".hpp", ".java",
@@ -36,6 +36,7 @@ export interface ScanReport {
   filesScanned: number;
   filesAnalyzed: number;
   suspiciousPoints: SuspiciousPoint[];
+  intel: IntelEntry[];
   byModule: Record<string, number>;
   summary: string;
 }
@@ -142,6 +143,7 @@ export async function runScan(
   // 阶段3：对选中的文件做深度分析
   const analyzeTargets = prioritized.slice(0, options.maxFiles ?? 10);
   const points: SuspiciousPoint[] = [];
+  const intel: IntelEntry[] = [];
   const byModule: Record<string, number> = {};
   let analyzed = 0;
 
@@ -150,8 +152,8 @@ export async function runScan(
     const signals = riskMap.get(f.path);
     try {
       const task = signals?.length
-        ? `对文件 ${f.path} 进行 0day 漏洞挖掘。该文件含高风险特征: ${signals.join(", ")}。请结合知识库模式分析所有可疑点，输出 suspiciousPoints 并给出 file:line。`
-        : `对文件 ${f.path} 进行快速安全检查，输出发现的 suspiciousPoints 或空数组。`;
+        ? `对文件 ${f.path} 进行 0day 漏洞挖掘。该文件含高风险特征: ${signals.join(", ")}。请结合知识库模式分析所有可疑点，输出 suspiciousPoints 并给出 file:line。使用 add_intel 记录发现的入口点/数据流情报。`
+        : `对文件 ${f.path} 进行快速安全检查，输出发现的 suspiciousPoints 或空数组。使用 add_intel 记录入口点情报。`;
       const { context } = await runtime.runTask(task, {
         targetFile: f.path,
         targetModule: moduleOf(f.path),
@@ -160,6 +162,7 @@ export async function runScan(
         (p) => !points.some((x) => x.location === p.location && x.type === p.type)
       );
       points.push(...newPoints);
+      intel.push(...context.intel);
       for (const p of newPoints) {
         const m = moduleOf(f.path) || "unknown";
         byModule[m] = (byModule[m] ?? 0) + 1;
@@ -177,8 +180,9 @@ export async function runScan(
     filesScanned: files.length,
     filesAnalyzed: analyzed,
     suspiciousPoints: points,
+    intel,
     byModule,
-    summary: `扫描 ${target}：发现 ${files.length} 个源码文件，深度分析 ${analyzed} 个，确认 ${points.length} 个可疑点`,
+    summary: `扫描 ${target}：发现 ${files.length} 个源码文件，深度分析 ${analyzed} 个，确认 ${points.length} 个可疑点，记录 ${intel.length} 条情报`,
   };
   return report;
 }
@@ -203,7 +207,16 @@ export function renderReport(report: ScanReport): string {
   lines.push(`- 源码文件: ${report.filesScanned}`);
   lines.push(`- 深度分析: ${report.filesAnalyzed}`);
   lines.push(`- 可疑点: ${report.suspiciousPoints.length}`);
+  lines.push(`- 情报: ${report.intel.length}`);
   lines.push(``);
+  if (report.intel.length > 0) {
+    lines.push(`## 审计情报`);
+    lines.push(``);
+    report.intel.forEach((i) => {
+      lines.push(`- [${i.kind}/${i.severity}/${i.confidence}] ${i.target}: ${i.detail}`);
+    });
+    lines.push(``);
+  }
   lines.push(`## 可疑点汇总`);
   lines.push(``);
   if (report.suspiciousPoints.length === 0) {

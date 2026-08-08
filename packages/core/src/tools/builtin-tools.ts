@@ -7,6 +7,7 @@ import { readFileSync, readdirSync, statSync, existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import type { ToolExecutor } from "./ToolExecutor.js";
 import type { AgentTool } from "../agent/react.js";
+import { createMethodologyTools } from "../agent/methodology.js";
 
 /** 纯 JS 递归 grep（不依赖外部命令，规避 Windows 无 rg 问题） */
 function grepTree(
@@ -54,7 +55,16 @@ function grepTree(
   return out;
 }
 
-export function createBuiltinTools(toolExecutor: ToolExecutor, skills?: import("../skills/registry.js").SkillRegistry): AgentTool[] {
+export interface ContextBridge {
+  getContext: () => import("../agent/audit-context.js").AuditContext;
+  setContext: (ctx: import("../agent/audit-context.js").AuditContext) => void;
+}
+
+export function createBuiltinTools(
+  toolExecutor: ToolExecutor,
+  skills?: import("../skills/registry.js").SkillRegistry,
+  contextBridge?: ContextBridge
+): AgentTool[] {
   const tools: AgentTool[] = [
     {
       definition: {
@@ -134,6 +144,11 @@ export function createBuiltinTools(toolExecutor: ToolExecutor, skills?: import("
         return body;
       },
     });
+  }
+
+  // 方法论工具（借鉴 CyberStrike Methodology Engine）
+  if (contextBridge) {
+    tools.push(...createMethodologyTools(contextBridge.getContext, contextBridge.setContext));
   }
   return tools;
 }

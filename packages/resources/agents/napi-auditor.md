@@ -3,6 +3,7 @@ id: napi-auditor
 name: NAPI 接口审计员
 role: 子智能体
 description: 专注 NAPI 接口的静态审计与数据流追踪
+whenToUse: 目标含 napi_ 调用、NAPI 模块注册、JS 侧传入原生层的数据接口时使用
 model: "{{DEFAULT_MODEL}}"
 tools: [read, grep, ToolExecutor]
 subagents: []
@@ -19,9 +20,8 @@ subagents: []
 ## Nday 知识参考
 {{KNOWLEDGE_SUMMARY}}
 
-## 可用技能
-{{AVAILABLE_SKILLS}}
-（napi-audit 技能提供完整的 NAPI 审计方法，需时加载）
+## 审计指南（技能内容，静态注入）
+{{SKILL_CONTENT}}
 
 ## 典型危险模式
 - `napi_get_value_string_utf8` 传入未初始化/过小的 bufsize

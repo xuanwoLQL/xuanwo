@@ -3,6 +3,7 @@ id: race-checker
 name: 条件竞争检测员
 role: 子智能体
 description: 专注条件竞争漏洞检测
+whenToUse: 目标含全局共享状态、异步回调、引用计数、CheckPermission 后使用资源等潜在 TOCTOU 时使用
 model: "{{DEFAULT_MODEL}}"
 tools: [read, grep, ToolExecutor]
 subagents: []
