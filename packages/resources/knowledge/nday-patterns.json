@@ -1,58 +1,4236 @@
 {
   "version": "0.1.0",
-  "updatedAt": "2026-08-08T00:00:00Z",
+  "updatedAt": "2026-08-08T11:06:14.420Z",
+  "patternCount": 214,
+  "needsReview": 104,
   "patterns": [
     {
-      "id": "ohos-0001",
+      "id": "ohos-f76f750e",
+      "cveId": "CVE-2026-27648",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/web_webview",
+      "functionChain": [],
+      "fixDescription": "修复越界写漏洞，远程攻击者可造成任意代码执行",
+      "severity": "CRITICAL",
+      "codeSnippet": "未提供",
+      "tags": [
+        "OOB Write",
+        "WebView",
+        "RCE"
+      ],
+      "confidence": 1,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-66d028d7",
+      "cveId": "CVE-2026-24792",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/web/web_webview",
+      "functionChain": [],
+      "fixDescription": "修复条件竞争漏洞，远程攻击者可造成任意代码执行",
+      "severity": "HIGH",
+      "codeSnippet": "未提供",
+      "tags": [
+        "Race Condition",
+        "WebView",
+        "RCE"
+      ],
+      "confidence": 1,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-83ab065e",
+      "cveId": "CVE-2026-25850",
+      "vulnerabilityType": "权限绕过",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [],
+      "fixDescription": "修复不正确的权限管控漏洞，本地攻击者可造成敏感信息泄露",
+      "severity": "HIGH",
+      "codeSnippet": "未提供",
+      "tags": [
+        "Permission",
+        "Storage Service"
+      ],
+      "confidence": 1,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-63f981cd",
+      "cveId": "CVE-2026-27766",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/multimedia/audio_framework",
+      "functionChain": [],
+      "fixDescription": "修复volumeMap条件竞争漏洞，本地攻击者可造成敏感信息泄露",
+      "severity": "HIGH",
+      "codeSnippet": "未提供",
+      "tags": [
+        "Race Condition",
+        "Multimedia",
+        "Volume Map"
+      ],
+      "confidence": 1,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-f2303e2f",
+      "cveId": "CVE-2026-25110",
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/multimedia/medical/medical_native_impl.cpp",
+      "functionChain": [
+        "CreateSensorDataChannel",
+        "new (std::nothrow)",
+        "g_dataChannel->CreateSensorDataChannel(...)"
+      ],
+      "fixDescription": "对 new (std::nothrow) 的返回值进行空指针检查，为空时返回错误，避免后续直接调用 g_dataChannel->CreateSensorDataChannel(...) 造成空指针解引用。",
+      "severity": "CRITICAL",
+      "codeSnippet": "new (std::nothrow) 之后未判空，直接 g_dataChannel->CreateSensorDataChannel(...)（第 73 行）",
+      "tags": [
+        "CWE-476",
+        "空指针解引用",
+        "DoS",
+        "Nday",
+        "medical_sensor"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-9e3cc572",
+      "cveId": "CVE-2026-27766",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/multimedia/audio_framework/audio_service.cpp",
+      "functionChain": [
+        "AudioService",
+        "currentRendererStreamCnt_++"
+      ],
+      "fixDescription": "对 currentRendererStreamCnt_ 的递增操作加锁或改用原子变量，避免多线程并发更新导致条件竞争。",
+      "severity": "HIGH",
+      "codeSnippet": "audio_service.cpp:1407: currentRendererStreamCnt_++;",
+      "tags": [
+        "CWE-362",
+        "条件竞争",
+        "并发",
+        "Nday",
+        "audio_framework"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-9617810a",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/distributeddatamgr/device_auth/hc_file_posix.c",
+      "functionChain": [
+        "CreateDirectory",
+        "memcpy_s"
+      ],
+      "fixDescription": "在 memcpy_s 之前增加 len >= MAX_FOLDER_NAME_SIZE 长度边界校验，避免目录路径段超长导致复制失败或越界写。",
+      "severity": "CRITICAL",
+      "codeSnippet": "memcpy_s(dirCache, sizeof(dirCache), filePath, len); // 缺少 len >= MAX_FOLDER_NAME_SIZE 校验",
+      "tags": [
+        "CWE-787",
+        "越界写",
+        "memcpy",
+        "device_auth"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-331dd894",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/wlan",
+      "functionChain": [],
+      "fixDescription": "修复操作符优先级错误：pos++ 应为 (pos)++，防止越界读。引入 commit 2066ba2ae。",
+      "severity": "CRITICAL",
+      "codeSnippet": "pos++ vs (pos)++",
+      "tags": [
+        "OOB",
+        "CWE-125",
+        "operator precedence"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-9a9e6511",
+      "cveId": "CVE-2026-27648",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/arkweb/ohos_nweb/src/cef_delegate/nweb_handler_delegate.cc",
+      "functionChain": [
+        "nweb_handler_delegate.cc:4452"
+      ],
+      "fixDescription": "在 flowbuffer 越界读漏洞后插入边界检查 if ((offset + *strLen) > MAX_FLOWBUF_DATA_SIZE)，避免 header 数组越界访问。",
+      "severity": "CRITICAL",
+      "codeSnippet": "*strLen = *(header + (i * INDEX_SIZE) + 1) - 1;",
+      "tags": [
+        "OOB Read",
+        "array index",
+        "flowbuffer"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-38c9f171",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/wifi",
+      "functionChain": [
+        "DealDigital"
+      ],
+      "fixDescription": "修复操作符优先级错误：将 `**pos++` 改为 `*(*pos)++`，避免错误递增外层 const char ** 指针导致越界读。",
+      "severity": "CRITICAL",
+      "codeSnippet": "**pos++  // 应写为 *(*pos)++",
+      "tags": [
+        "OOB read",
+        "operator precedence",
+        "wifi",
+        "wifi_hdi_common.c",
+        "CWE-125"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-a3cf6b21",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [
+        "MountFileMgrFuse"
+      ],
+      "fixDescription": "为 MountFileMgrFuse 增加 caller/path 校验，避免未验证调用者或路径导致的非法挂载/访问。",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-20",
+        "input validation",
+        "storage",
+        "MountFileMgrFuse",
+        "storage_manager_provider.cpp"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-a35774c5",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [],
+      "fixDescription": "添加 STACK_LIMIT_CHECK 防止失控递归。引入 commit 916928705。",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "recursion",
+        "CWE-674"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-a58f68a6",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "drivers/peripheral/display/drm_connector.cpp",
+      "functionChain": [],
+      "fixDescription": "修复 display composer drm_connector 路径上的资源泄漏；删除行位于 drm_connector.cpp:301",
+      "severity": "MEDIUM",
+      "codeSnippet": "display/composer/vdi_base/src/drm_connector.cpp:301 (删除行)",
+      "tags": [
+        "accepted",
+        "CWE-401",
+        "resource leak"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-51f9eb4a",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "drivers/peripheral/display/drm_connector.cpp",
+      "functionChain": [
+        "DISPLAY_CHK_RETURN",
+        "drm_connector.cpp:301"
+      ],
+      "fixDescription": "修复 commit 3634af31f 删除 drm_connector.cpp:301 的 DISPLAY_CHK_RETURN 行，以修复内存泄漏；L2 引入 commit 为 5b8fa9ba20。",
+      "severity": "MEDIUM",
+      "codeSnippet": "DISPLAY_CHK_RETURN 删除行 = drm_connector.cpp:301",
+      "tags": [
+        "CWE-401",
+        "memory leak",
+        "display",
+        "OpenHarmony"
+      ],
+      "confidence": 0.95,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-652302f3",
       "cveId": "",
       "vulnerabilityType": "缓冲区溢出",
       "modulePath": "foundation/web/web_webview/ohos_adapter/cert_mgr_adapter",
-      "functionChain": ["napi_get_cb_info", "napi_get_value_string_utf8", "memcpy"],
+      "functionChain": [
+        "napi_get_cb_info",
+        "napi_get_value_string_utf8",
+        "memcpy"
+      ],
       "fixDescription": "使用 napi_get_value_string_utf8 前必须先校验 bufsize 与实际长度，防止栈溢出",
       "severity": "HIGH",
       "codeSnippet": "napi_get_value_string_utf8(env, argv[1], buf, sizeof(buf), &len);",
-      "tags": ["NAPI", "栈溢出", "字符串拷贝"],
+      "tags": [
+        "NAPI",
+        "栈溢出",
+        "字符串拷贝"
+      ],
       "confidence": 0.9,
       "needsReview": false
     },
     {
-      "id": "ohos-0002",
+      "id": "ohos-35679ae7",
+      "cveId": "",
+      "vulnerabilityType": "权限绕过",
+      "modulePath": "foundation/communication/netmanager_ext",
+      "functionChain": [
+        "OnRemoteRequest",
+        "CheckCallingPermission"
+      ],
+      "fixDescription": "IPC 处理函数缺少 CheckCallingPermission，未授权进程可直接调用",
+      "severity": "HIGH",
+      "codeSnippet": "int OnRemoteRequest(uint32_t code, ...) { switch(code) { ... } }",
+      "tags": [
+        "IPC",
+        "权限",
+        "Binder"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-7fb58413",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/netmanager_base/ipc_service_common.c",
+      "functionChain": [
+        "ipc_service_common.c:1231",
+        "GetAndValSize32Param",
+        "memcpy_s(&osAccountId, 8, ...)"
+      ],
+      "fixDescription": "将 inOutLen 改为 sizeof(int32_t) 或使用与目标 osAccountId（4 字节）匹配的长度，避免向 4 字节栈变量写入 8 字节造成栈越界写。",
+      "severity": "CRITICAL",
+      "codeSnippet": "int32_t inOutLen = sizeof(int64_t);  // 但 osAccountId 是 int32_t",
+      "tags": [
+        "CWE-787",
+        "栈越界写",
+        "memcpy_s",
+        "security_device_auth",
+        "Nday"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-6ff8d55e",
+      "cveId": "CVE-2024-38386",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [],
+      "fixDescription": "修复方舟 eTS 运行时越界读写漏洞，避免本地攻击者在预装应用中执行代码。",
+      "severity": "CRITICAL",
+      "codeSnippet": "CVE-2024-38386: 方舟eTS运行时越界读写漏洞",
+      "tags": [
+        "CWE-787",
+        "CWE-125",
+        "越界读写",
+        "代码执行"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-22134869",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/containers",
+      "functionChain": [],
+      "fixDescription": "修复 containers 中的 OOB 问题（commit b0170f91c，sync master to 6.0release fix container oob）",
+      "severity": "CRITICAL",
+      "codeSnippet": null,
+      "tags": [
+        "OOB",
+        "CWE-787",
+        "containers",
+        "ets_runtime"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-26c88c63",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/containers",
+      "functionChain": [
+        "Array.prototype.sort",
+        "callbackfn",
+        "ArrayList/Vector sort"
+      ],
+      "fixDescription": "修复 Arraylist 和 Vector 的 sort 回调函数处理时的越界访问问题（commit 73f8ecad6）",
+      "severity": "CRITICAL",
+      "codeSnippet": "BUILTINS_API_TRACE(argv->GetThread(), Array, Sort);",
+      "tags": [
+        "OOB",
+        "Arraylist",
+        "Vector",
+        "sort callbackfn",
+        "CWE-787"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-1845e0b5",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/multimedia/medical/medical_native_impl.cpp",
+      "functionChain": [],
+      "fixDescription": "对 g_dataChannel 的 new 返回值判空后再解引用，避免空指针崩溃。",
+      "severity": "CRITICAL",
+      "codeSnippet": "interfaces/native/src/medical_native_impl.cpp:73: g_dataChannel new后未判空即解引用",
+      "tags": [
+        "CWE-476",
+        "空指针",
+        "NULL Pointer Dereference"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-76fc5bf9",
+      "cveId": "CVE-2026-27766",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/multimedia/audio_framework",
+      "functionChain": [
+        "currentRendererStreamCnt_++",
+        "currentRendererStreamCnt_--"
+      ],
+      "fixDescription": "消除 currentRendererStreamCnt_ 无锁自增与有锁自减之间的数据竞争，使用原子操作或同一把锁保护计数增减。",
+      "severity": "HIGH",
+      "codeSnippet": "audio_service.cpp:1407: currentRendererStreamCnt_++ （无锁自增）; audio_service.cpp:1413: currentRendererStreamCnt_-- （有锁自减）",
+      "tags": [
+        "CWE-362",
+        "CWE-364",
+        "数据竞争",
+        "信息泄露"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-515857d3",
+      "cveId": "CVE-2025-0587",
+      "vulnerabilityType": "整数溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [],
+      "fixDescription": "修复 arkcompiler_ets_runtime 整数溢出漏洞，避免受限场景下任意代码执行。",
+      "severity": "MEDIUM",
+      "codeSnippet": "CVE-2025-0587: arkcompiler_ets_runtime整数溢出漏洞",
+      "tags": [
+        "CWE-190",
+        "整数溢出",
+        "任意代码执行"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-64cbbc5d",
+      "cveId": "",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [],
+      "fixDescription": "修复 volumeMap 条件竞争漏洞，增加并发访问保护；相关修改包含删除 storage_rl_map.h。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-362",
+        "race condition",
+        "volumeMap",
+        "storage"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-78c251e8",
+      "cveId": "CVE-2026-24792",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/web/web_webview",
+      "functionChain": [
+        "WebSchemeHandler"
+      ],
+      "fixDescription": "修复 WebSchemeHandler 的数据竞争漏洞，防止远程攻击者利用条件竞争执行任意代码。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CVE-2026-24792",
+        "race condition",
+        "web_webview",
+        "remote code execution"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-e3a2cb37",
+      "cveId": "",
+      "vulnerabilityType": "UAF",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [],
+      "fixDescription": "将lambda捕获的this改为self弱引用，修复UAF",
+      "severity": "CRITICAL",
+      "codeSnippet": "[this] → [self]",
+      "tags": [
+        "UAF",
+        "Lambda",
+        "ETS Runtime"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-6b5b3a29",
+      "cveId": "",
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext",
+      "functionChain": [
+        "GetRenderFrameHost()",
+        "base::Unretained(this)"
+      ],
+      "fixDescription": "将裸指针或 base::Unretained(this) 替换为 WeakPtr，或增加生命周期检查，避免对象释放后继续访问。涉及 c9c7d917、d43dc97a7、4ed05205、38624a73 等提交。",
+      "severity": "CRITICAL",
+      "codeSnippet": "auto rfh = GetRenderFrameHost();\nbase::Unretained(this)",
+      "tags": [
+        "UAF",
+        "WeakPtr",
+        "render frame",
+        "callback"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-0f46d0b4",
+      "cveId": "CVE-2023-46708",
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/communication/wifi",
+      "functionChain": [],
+      "fixDescription": "修复 wifi_net_agent.cpp 中的 UAF：不要将 make_unique().release() 的裸指针直接交给 sptr 接管，应使用正确的所有权转移/引用计数管理。",
+      "severity": "CRITICAL",
+      "codeSnippet": "make_unique().release() /* 传给 sptr */",
+      "tags": [
+        "CWE-416",
+        "UAF",
+        "wifi",
+        "wifi_net_agent.cpp",
+        "CVE-2023-46708"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-27a14dab",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/arkweb/ohos_nweb/src/cef_delegate/nweb_handler_delegate.cc",
+      "functionChain": [],
+      "fixDescription": "修复 flowbuffer 的安全问题（修复 commit 18c5ba4d75）",
+      "severity": "CRITICAL",
+      "codeSnippet": "",
+      "tags": [
+        "OOB Read",
+        "CWE-125",
+        "flowbuffer"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-3e40a6c0",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_api/plain_array.cpp",
+      "functionChain": [
+        "Add",
+        "AdjustArray",
+        "CopyArray",
+        "Set"
+      ],
+      "fixDescription": "修复 newCapacity 计算，使用 std::max(DEFAULT_CAPACITY_LENGTH, ...) 防止 capacity=0 时容量为 0 导致后续 Set 越界写",
+      "severity": "CRITICAL",
+      "codeSnippet": "uint32_t newCapacity = capacity << 1U;",
+      "tags": [
+        "Out-of-bounds Write",
+        "integer overflow",
+        "capacity=0"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-ac2c92d7",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/containers/containers_vector.cpp",
+      "functionChain": [
+        "CopyTaggedArrayElement"
+      ],
+      "fixDescription": "commit b0170f91c 修复 container OOB，删除行中包含越界写操作，推测添加了索引边界检查。",
+      "severity": "CRITICAL",
+      "codeSnippet": "",
+      "tags": [
+        "OOB",
+        "CWE-787",
+        "container"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-5d48c713",
+      "cveId": "CVE-2026-49029",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/hdf_core",
+      "functionChain": [
+        "netlink uevent string",
+        "memcpy_s",
+        "strcmp/strrchr"
+      ],
+      "fixDescription": "Ensure uevent strings are null-terminated before strcmp/strrchr; use bounded string copy or add explicit null terminator.",
+      "severity": "CRITICAL",
+      "codeSnippet": "memcpy_s(dst, dstSize, src, strlen(src));\n/* dst lacks null terminator */\nif (strcmp(dst, target) == 0) { ... }",
+      "tags": [
+        "OOB Read",
+        "missing null termination",
+        "netlink uevent"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-802bfe73",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/adapter_if.c",
+      "functionChain": [
+        "GetHeaderStr",
+        "UsbFnWriteStrings"
+      ],
+      "fixDescription": "Do not overwrite headerStr.strCount with the last string's count; iterate using the actual number of strings or correct strCount.",
+      "severity": "CRITICAL",
+      "codeSnippet": "for (i = 0; i < headerStr.strCount; i++) { ... } /* wrong strCount -> OOB read */",
+      "tags": [
+        "OOB Read",
+        "USB DDK",
+        "string count overwrite"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-84d0feca",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/input_device_manager.cpp",
+      "functionChain": [
+        "input_device_manager",
+        "scan loop",
+        "i<=scanCount"
+      ],
+      "fixDescription": "Change loop condition from i<=scanCount to i<scanCount to prevent off-by-one out-of-bounds write.",
+      "severity": "CRITICAL",
+      "codeSnippet": "for (int i = 0; i <= scanCount; i++) { arr[i] = ...; } /* off-by-one */",
+      "tags": [
+        "off-by-one",
+        "OOB Write",
+        "AI review fix"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-511694c3",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_stable_array.cpp",
+      "functionChain": [
+        "Array.prototype.with",
+        "IsStableJSArray",
+        "JSStableArray::With",
+        "Out-of-bounds Get on elements"
+      ],
+      "fixDescription": "在 ArraySetLength / OrdinaryDefineOwnProperty 增大数组 length 时同步扩容 elements，或在 JSStableArray::With/toReversed/toSpliced/sort 中校验 length 不超过 elements 的实际分配长度，避免按数组 length 越界读取 elements。",
+      "severity": "CRITICAL",
+      "codeSnippet": "a.length=100; a.with(50,\"x\") // length=100, elements=3 -> OOB read idx 3..99",
+      "tags": [
+        "ets_runtime",
+        "CWE-125",
+        "Heap OOB Read",
+        "Stable Array",
+        "JS API",
+        "0day"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-3568ee29",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/containers/containers_buffer.cpp",
+      "functionChain": [
+        "BufferConstructor",
+        "GetEncodingType"
+      ],
+      "fixDescription": "When constructing a Buffer, a non-string value is cast to EcmaString in GetEncodingType, causing an out-of-bounds read. The fix adds a type check before treating the argument as EcmaString (accepted track: b0170f91c / Container fastbuffer commit 9d190e9325).",
+      "severity": "CRITICAL",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-125",
+        "OOB read",
+        "containers_buffer",
+        "ets_runtime",
+        "accepted"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-fcb74d1a",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/containers/containers_buffer.cpp",
+      "functionChain": [
+        "WriteUIntBE",
+        "WriteUIntLE",
+        "ReadUIntBE",
+        "ReadUIntLE",
+        "GetLength"
+      ],
+      "fixDescription": "修复 byteLength 参数只检查 IsNumber 未检查范围，导致 GetLength()-byteLength 下溢的 OOB 写问题；增加范围校验。",
+      "severity": "CRITICAL",
+      "codeSnippet": "buffer->GetLength() - byteLength",
+      "tags": [
+        "OOB write",
+        "integer underflow",
+        "fastbuffer",
+        "containers"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-2061af71",
+      "cveId": "",
+      "vulnerabilityType": "UAF",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins/builtins_atomics.cpp",
+      "functionChain": [
+        "Atomics::AtomicsOperation",
+        "BigIntToInt64",
+        "TypedArray::GetBlock"
+      ],
+      "fixDescription": "In the BIGINT64/BIGUINT64 branch, re-fetch the block pointer after BigIntToInt64 (which may trigger GC) to avoid stale pointer use.",
+      "severity": "CRITICAL",
+      "codeSnippet": "case TypedArray::BIGINT64:\n  BigIntToInt64(...);\n  // Bug: using block pointer obtained before BigIntToInt64\n  auto data = block->GetData();",
+      "tags": [
+        "UAF",
+        "GC",
+        "atomics"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-c3d9b9a1",
+      "cveId": "",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [
+        "UpdatePidByPath"
+      ],
+      "fixDescription": "Fix TOCTOU in UpdatePidByPath by adding synchronization or removing the unsafe function.",
+      "severity": "HIGH",
+      "codeSnippet": "void UpdatePidByPath(...) { ... } // deleted entirely in fix",
+      "tags": [
+        "TOCTOU",
+        "race"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-1467380a",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_stable_array.cpp",
+      "functionChain": [
+        "ArrayMap",
+        "StableArray::Map"
+      ],
+      "fixDescription": "Fix Array.map out-of-bounds access (PR #14827, commit 9da77355).",
+      "severity": "CRITICAL",
+      "codeSnippet": "// see commit 9da77355",
+      "tags": [
+        "OOB",
+        "Array.map"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-aec6abf1",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/filemanagement/storage_service/storage_daemon_provider.cpp",
+      "functionChain": [
+        "StorageDaemonProvider::GetService",
+        "CheckUidPermission"
+      ],
+      "fixDescription": "Add missing UID permission check (CWE-862).",
+      "severity": "MEDIUM",
+      "codeSnippet": "if (!CheckUidPermission(uid)) return ERR_PERMISSION_DENIED;",
+      "tags": [
+        "permission",
+        "CWE-862"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-8766f7df",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/multimedia/camera_framework/hstream_capture.cpp",
+      "functionChain": [
+        "hstream_capture.cpp:345 SetRawCallback();",
+        "hstream_capture.cpp:1056 function definition",
+        "hstream_capture.h:192/196"
+      ],
+      "fixDescription": "commit 0b3ecd200（'fix waring of uaf'）修复 hstream_capture 的 UAF 竞态：删除 hstream_capture.cpp:345 的 SetRawCallback() 调用及 1056 行的函数定义，并同步调整 hstream_capture.h:192/196，避免回调在对象释放后访问。",
+      "severity": "CRITICAL",
+      "codeSnippet": "hstream_capture.cpp:345 (`SetRawCallback();` call)",
+      "tags": [
+        "use-after-free",
+        "race",
+        "CWE-416",
+        "camera"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-ffa14c3c",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service/storage_daemon_provider.cpp",
+      "functionChain": [
+        "GetUserStatistics",
+        "std::lock_guard<std::mutex> lock(mutexStats_)"
+      ],
+      "fixDescription": "commit 28a4af569860（修复crash）删除 storage_daemon_provider.cpp:64 的锁（std::lock_guard<std::mutex> lock(mutexStats_)）并重构 GetUserStatistics 的竞态结构，避免并发统计导致崩溃。",
+      "severity": "HIGH",
+      "codeSnippet": "std::lock_guard<std::mutex> lock(mutexStats_);",
+      "tags": [
+        "race-condition",
+        "CWE-362",
+        "crash"
+      ],
+      "confidence": 0.9,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-8d792dba",
       "cveId": "",
       "vulnerabilityType": "UAF",
       "modulePath": "foundation/communication/netmanager_base/services/netmanagernative",
-      "functionChain": ["OnRecv", "delete", "use_after_free"],
+      "functionChain": [
+        "OnRecv",
+        "delete",
+        "use_after_free"
+      ],
       "fixDescription": "异步回调中对象已被释放后仍被访问，需要引用计数保护",
       "severity": "CRITICAL",
       "codeSnippet": "mCb->OnRecv(data); delete mCb;",
-      "tags": ["IPC", "UAF", "异步"],
+      "tags": [
+        "IPC",
+        "UAF",
+        "异步"
+      ],
       "confidence": 0.85,
       "needsReview": false
     },
     {
-      "id": "ohos-0003",
+      "id": "ohos-1aae9371",
       "cveId": "",
-      "vulnerabilityType": "权限绕过",
-      "modulePath": "foundation/communication/netmanager_ext",
-      "functionChain": ["OnRemoteRequest", "CheckCallingPermission"],
-      "fixDescription": "IPC 处理函数缺少 CheckCallingPermission，未授权进程可直接调用",
-      "severity": "HIGH",
-      "codeSnippet": "int OnRemoteRequest(uint32_t code, ...) { switch(code) { ... } }",
-      "tags": ["IPC", "权限", "Binder"],
-      "confidence": 0.9,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/web_webview/ohos_adapter/cert_mgr_adapter",
+      "functionChain": [
+        "GetSytemRootCertData",
+        "GetUserRootCertData"
+      ],
+      "fixDescription": "修正 certCount 边界判断，由 '>' 改为 '>='，避免当 certCount == certsCount 时越界读取 certList->certAbstract[certCount]；同时对 uri 增加空指针检查，防止 strlen(uri) 空指针解引用。",
+      "severity": "CRITICAL",
+      "codeSnippet": "if (certCount > certList->certsCount) { ... } // 应为 >=\ncertList->certAbstract[certCount]; // 越界读\nstrlen(uri); // uri 可能为 NULL",
+      "tags": [
+        "certificate",
+        "off-by-one",
+        "CWE-125",
+        "CWE-476",
+        "web_webview"
+      ],
+      "confidence": 0.85,
       "needsReview": false
     },
     {
-      "id": "ohos-0004",
+      "id": "ohos-558ddff9",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/web_webview/cert_mgr_adapter_impl.cpp",
+      "functionChain": [
+        "GetSytemRootCertData",
+        "GetUserRootCertData"
+      ],
+      "fixDescription": "Fix off-by-one in certificate count check: change `certCount > certsCount` to `certCount >= certsCount` to prevent reading `certList->certAbstract[certCount]` when counts are equal; also add null check for `uri` before calling `strlen(uri)` to avoid null pointer dereference.",
+      "severity": "CRITICAL",
+      "codeSnippet": "if (certCount > certsCount)\n  ...\ncertList->certAbstract[certCount]\nstrlen(uri)",
+      "tags": [
+        "CWE-125",
+        "Off-by-one",
+        "Null Pointer Dereference",
+        "Certificate"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-cbdd1136",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/multimedia/audio_framework",
+      "functionChain": [
+        "HpaeInnerCapturerManager::Init",
+        "hpae_pcm_process",
+        "frameLen 未校验 -> 越界读 16 字节"
+      ],
+      "fixDescription": "对 frameLen 进行合法性校验（如非零、不超过缓冲区大小），修复 HpaeInnerCaptureManger 中 ASAN 报出的 Heap-Buffer-overflow READ 16。",
+      "severity": "CRITICAL",
+      "codeSnippet": "HpaeInnerCaptureManger Heap-Buffer-overflow READ 16",
+      "tags": [
+        "CWE-125",
+        "堆越界读",
+        "ASAN",
+        "audio_engine",
+        "Nday"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-8296c6bf",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/device_standby/device_standby/hc_file_posix.c",
+      "functionChain": [
+        "memcpy"
+      ],
+      "fixDescription": "修复 memcpy 调用中的长度校验，避免越界写入。",
+      "severity": "CRITICAL",
+      "codeSnippet": "",
+      "tags": [
+        "memcpy",
+        "CWE-787",
+        "oob-write"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-f066d1ea",
+      "cveId": "CVE-2026-28206",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/update/update_sys_installer",
+      "functionChain": [],
+      "fixDescription": "修复 update_sys_installer 条件竞争漏洞，本地攻击者可造成任意代码执行（PR/406）",
+      "severity": "HIGH",
+      "codeSnippet": null,
+      "tags": [
+        "CVE-2026-28206",
+        "race condition",
+        "update_sys_installer",
+        "local code execution"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-5bd3ff74",
+      "cveId": "CVE-2026-32668",
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/update/update_sys_installer",
+      "functionChain": [],
+      "fixDescription": "修复 update_sys_installer UAF 漏洞，本地攻击者可造成任意代码执行（PR/406/diff）",
+      "severity": "CRITICAL",
+      "codeSnippet": null,
+      "tags": [
+        "CVE-2026-32668",
+        "UAF",
+        "update_sys_installer",
+        "local code execution"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-c4d23abf",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service/services/storage_manager/volume_manager_service",
+      "functionChain": [
+        "volumeMap"
+      ],
+      "fixDescription": "修复 volumeMap 条件竞争漏洞（commit c6fae105）",
+      "severity": "HIGH",
+      "codeSnippet": null,
+      "tags": [
+        "volumeMap",
+        "race condition",
+        "volume_manager_service",
+        "CWE-362"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-604a1773",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_api/js_api_arraylist.cpp",
+      "functionChain": [],
+      "fixDescription": "修复 js_api_arraylist 中 `<=` 与 `<` 的边界错误导致的越界写，将条件从 `<=` 改为 `<`。",
+      "severity": "CRITICAL",
+      "codeSnippet": "if (pos < limit) { ... }",
+      "tags": [
+        "OOB write",
+        "arraylist",
+        "ets_runtime",
+        "off-by-one"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-4c1af2b5",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "CreateRealm"
+      ],
+      "fixDescription": "修复 CreateRealm 未初始化导致的内存越界写，初始化相关字段/内存。",
+      "severity": "CRITICAL",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-787",
+        "uninitialized",
+        "OOB write",
+        "ets_runtime"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-21b6329f",
+      "cveId": "",
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext",
+      "functionChain": [
+        "CompositorManager",
+        "delete com->second"
+      ],
+      "fixDescription": "在 delete 后将指针置为 nullptr，或使用智能指针管理生命周期，避免重复释放导致 double-free/UAF。对应 782e4970 提交。",
+      "severity": "CRITICAL",
+      "codeSnippet": "delete com->second;\n// 缺少 com->second = nullptr;",
+      "tags": [
+        "UAF",
+        "double-free",
+        "compositor",
+        "null pointer"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-213f1e96",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext/libcef",
+      "functionChain": [
+        "GetRefererValue",
+        "headers.substr"
+      ],
+      "fixDescription": "对 substr 调用增加边界检查，防止因长度参数超出字符串实际长度导致越界读取。对应 81d0dcbe 提交。",
+      "severity": "CRITICAL",
+      "codeSnippet": "headers.substr(...)",
+      "tags": [
+        "OOB read",
+        "CWE-125",
+        "header parsing"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-a6658b8d",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "base/security/certificate_manager",
+      "functionChain": [
+        "GetUserCertAlias",
+        "memcpy_s"
+      ],
+      "fixDescription": "修复静态告警，将memcpy_s的目标大小参数从CM_MAX_FILE_NAME_LEN改为filePathLen + 1，避免栈越界写。修复commit: 2567807（2026-07-20修复静态告警）",
+      "severity": "CRITICAL",
+      "codeSnippet": "memcpy_s(fileNames[count].data, filePathLen + 1, src, filePathLen);",
+      "tags": [
+        "CWE-787",
+        "stack overflow",
+        "memcpy_s",
+        "static warning"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-57d8fee0",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_api/stack.cpp",
+      "functionChain": [
+        "Pop",
+        "Get"
+      ],
+      "fixDescription": "修复 Pop 方法中先减 top 再读取导致的越界读（top=0 时读取 top+1）",
+      "severity": "CRITICAL",
+      "codeSnippet": "this->SetTop(--top); return elements->Get(thread, top + 1);",
+      "tags": [
+        "Out-of-bounds Read",
+        "stack",
+        "top underflow"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-7e9266d1",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/wifi/wifi_hdi_common.c",
+      "functionChain": [
+        "wifi_hdi_common",
+        "pos++ vs (pos)++"
+      ],
+      "fixDescription": "Fix operator precedence bug where pos++ is parsed as *(pos++) instead of (*pos)++, which causes an out-of-bounds read.",
+      "severity": "CRITICAL",
+      "codeSnippet": "value = *(pos++); /* intended: (*pos)++ */",
+      "tags": [
+        "OOB Read",
+        "operator precedence",
+        "wifi"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-04bfc357",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "drivers/peripheral/camera",
+      "functionChain": [
+        "GetCameraName",
+        "strncpy_s"
+      ],
+      "fixDescription": "Do not return the address of a stack buffer; use a heap/static buffer or fill a caller-provided buffer.",
+      "severity": "MEDIUM",
+      "codeSnippet": "char name[SIZE];\nstrncpy_s(name, sizeof(name), ...);\nreturn name; /* stack address returned */",
+      "tags": [
+        "CWE-562",
+        "stack address",
+        "camera"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-c51a0b15",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "drivers/peripheral/libusb_adapter.cpp",
+      "functionChain": [
+        "GetBulkWrapper",
+        "DoControlTransfer",
+        "OsalMemFree"
+      ],
+      "fixDescription": "Add a lock around GetBulkWrapper and/or set the freed pointer to NULL after OsalMemFree to avoid use-after-free.",
+      "severity": "CRITICAL",
+      "codeSnippet": "GetBulkWrapper(...); /* no lock, can be UAF */\nOsalMemFree(ptr); /* no NULL assignment */",
+      "tags": [
+        "UAF",
+        "USB",
+        "locking"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-5fc3b2bd",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/base/json_parser.cpp",
+      "functionChain": [
+        "JSON.parse",
+        "JsonParser::Launch",
+        "Whitespace skip loop",
+        "current_ != range_ check with nullptr range_"
+      ],
+      "fixDescription": "将 JSON.parse 空白字符跳过循环的边界条件恢复为 current_ != end_，或确保 range_ 在 Launch() 首次调用前完成初始化，避免 range_ 默认为 nullptr 导致 end_ 越界向下读取。",
+      "severity": "CRITICAL",
+      "codeSnippet": "while (current_ != range_) { ... } // range_ = nullptr on first Launch()",
+      "tags": [
+        "ets_runtime",
+        "CWE-125",
+        "OOB Read",
+        "JSON.parse",
+        "Regression",
+        "0day"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-2b5c5433",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/multimedia/audio_framework",
+      "functionChain": [
+        "loopback 计数更新"
+      ],
+      "fixDescription": "Fix a race condition in the multimedia audio framework loopback counter (L2=48711442a3d, CWE-362 accepted).",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-362",
+        "race condition",
+        "multimedia",
+        "accepted"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-a2bb5626",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/communication/netmanager_base",
+      "functionChain": [
+        "std::map 并发访问"
+      ],
+      "fixDescription": "Fix a multi-threaded map access race in netmanager (L2=fe66efc72, CWE-362 accepted).",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-362",
+        "race condition",
+        "netmanager",
+        "accepted"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-fe7a9425",
+      "cveId": "",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [
+        "volumeMap"
+      ],
+      "fixDescription": "修复 volumeMap 条件竞争漏洞，对共享的 volumeMap 增加并发保护/同步机制。",
+      "severity": "HIGH",
+      "codeSnippet": "修复volumeMap条件竞争漏洞",
+      "tags": [
+        "CWE-362",
+        "race condition",
+        "volumeMap",
+        "storage_service"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-b8dccf7e",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins/builtins_arraybuffer.cpp",
+      "functionChain": [
+        "builtins_arraybuffer"
+      ],
+      "fixDescription": "修复 ArrayBuffer 内置操作中的类型混淆问题，避免将一种对象类型错误地当作另一种类型处理。",
+      "severity": "MEDIUM",
+      "codeSnippet": "ecmascript/builtins/builtins_arraybuffer.cpp:550 (type confusion)",
+      "tags": [
+        "CWE-843",
+        "类型混淆",
+        "ecmascript",
+        "Accepted"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-e4909f30",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins/js_api_buffer.cpp",
+      "functionChain": [
+        "AllocateFromBufferObject"
+      ],
+      "fixDescription": "Add bounds check for byteOffset and length in AllocateFromBufferObject to prevent OOB access.",
+      "severity": "CRITICAL",
+      "codeSnippet": "if (byteOffset > arrayLen) {\n  offset = arrayLen;\n  length = arrayLen;\n}",
+      "tags": [
+        "OOB",
+        "fastbuffer"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-09b1cc6c",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/multimedia/camera_framework",
+      "functionChain": [
+        "static_cast<HCameraMovieFileOutput*>"
+      ],
+      "fixDescription": "Add type check before static_cast to avoid casting non-HCameraMovieFileOutput objects.",
+      "severity": "MEDIUM",
+      "codeSnippet": "auto output = static_cast<HCameraMovieFileOutput*>(obj); // missing type check",
+      "tags": [
+        "type confusion",
+        "CWE-843"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-503bef00",
+      "cveId": "",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [
+        "VolumeMap",
+        "UpdateVolumeMap"
+      ],
+      "fixDescription": "Fix volumeMap race condition (commit c6fae1055).",
+      "severity": "HIGH",
+      "codeSnippet": "// commit c6fae1055",
+      "tags": [
+        "race condition",
+        "volumeMap"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-08159396",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/filemanagement/storage_service/services/storage_manager",
+      "functionChain": [
+        "func()",
+        "read size after object destroyed"
+      ],
+      "fixDescription": "a3f618514 修复 region_manager UAF：func 先调用会销毁对象，后读 size 是 UAF；修复应避免在对象销毁后访问其成员。",
+      "severity": "CRITICAL",
+      "codeSnippet": "func 先调用会销毁对象 → 后读 size 是 UAF",
+      "tags": [
+        "CWE-416",
+        "UAF",
+        "region_manager",
+        "OpenHarmony"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-d4ed3f26",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/container",
+      "functionChain": [
+        "container",
+        "vector:673",
+        "buffer:142"
+      ],
+      "fixDescription": "track 154 已解：container OOB part II，fix commit 65e0172fa（vector:673）与 7e443f0d（buffer:142）。",
+      "severity": "CRITICAL",
+      "codeSnippet": "container oob part II, vector:673, buffer:142",
+      "tags": [
+        "CWE-125",
+        "CWE-787",
+        "OOB",
+        "container",
+        "OpenHarmony"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-8fdb5f58",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [
+        "storage_service",
+        "volumeMap"
+      ],
+      "fixDescription": "commit c6fae10558fc46ae14d7f4c0f447c2a662bc6380 修复 volumeMap 条件竞争漏洞；对 volumeMap 的访问增加互斥/同步机制，避免并发读写导致竞态。",
+      "severity": "HIGH",
+      "codeSnippet": "修复volumeMap条件竞争漏洞",
+      "tags": [
+        "race-condition",
+        "CWE-362",
+        "volumeMap"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-769b13d6",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "js_stable_array",
+        "Array.map"
+      ],
+      "fixDescription": "修复 js_stable_array 中 Array.map 的越界访问（CWE-125），补充索引/长度边界校验，防止读取越界。",
+      "severity": "CRITICAL",
+      "codeSnippet": "js_stable_array With OOB (L1=1572, L2=4af173b6d8, CWE-125)",
+      "tags": [
+        "OOB-read",
+        "CWE-125",
+        "stable-array",
+        "Array.map"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-8b81140e",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/communication/usb/usb_event_subscriber.h",
+      "functionChain": [
+        "usb_event_subscriber.h:50",
+        "static bool isPtp_"
+      ],
+      "fixDescription": "commit 45689c288226（线程竞争首次修改）将 usb_event_subscriber.h:50 的 static bool isPtp_ 改为原子量或加锁，修复多线程访问 PTP 状态的竞态。",
+      "severity": "HIGH",
+      "codeSnippet": "static bool isPtp_; (→atomic)",
+      "tags": [
+        "race-condition",
+        "CWE-362",
+        "usb"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-eed94e62",
+      "cveId": null,
+      "vulnerabilityType": "整数溢出",
+      "modulePath": "foundation/filemanagement/storage_service/disk_info.cpp",
+      "functionChain": [
+        "disk_info.cpp:468",
+        "std::stoi"
+      ],
+      "fixDescription": "commit e7b814a7cef1 将 std::stoi 替换为 strtoll 并增加范围检查，修复 disk_info.cpp:468 的整数溢出（CWE-190）。",
+      "severity": "MEDIUM",
+      "codeSnippet": "std::stoi→strtoll range check",
+      "tags": [
+        "integer-overflow",
+        "CWE-190",
+        "range-check"
+      ],
+      "confidence": 0.85,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-76f47b17",
+      "vulnerabilityType": "其他",
+      "modulePath": "base/security/certificate_manager/cj_cert_manager_ffi.c",
+      "functionChain": [
+        "FfiCertManagerGetUserCertList",
+        "strdup"
+      ],
+      "fixDescription": "Fix commit 219e3be changes the loop assignment from `(*retObj)->uri = strdup(...)` to `(*retObj)[i].uri = strdup(...)`. The original code repeatedly overwrote the 0-th element, leaking every previous `strdup` result and leaving the remaining array elements NULL.",
+      "severity": "MEDIUM",
+      "codeSnippet": "(*retObj)->uri = strdup(...);  // in a loop, always writes index 0",
+      "tags": [
+        "Memory Leak",
+        "CWE-401",
+        "FFI",
+        "CertificateManager"
+      ],
+      "confidence": 0.82,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-c1778050",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "arkcompiler/ets_runtime/process.cpp",
+      "functionChain": [
+        "pids_.insert",
+        "kill"
+      ],
+      "fixDescription": "修复 process.cpp:167 中存储 PID 后延迟 kill 导致的 TOCTOU 竞态问题",
+      "severity": "HIGH",
+      "codeSnippet": null,
+      "tags": [
+        "TOCTOU",
+        "race",
+        "pids_",
+        "process"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-012f45f1",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/filemanagement/storage_service/services/storage_manager/volume_manager_service",
+      "functionChain": [
+        "volume_manager_service.cpp",
+        "malloc"
+      ],
+      "fixDescription": "修复 MTP 路径上 volume_manager_service.cpp:383 处 malloc 少分配 1 字节导致的 off-by-one 堆溢出",
+      "severity": "CRITICAL",
+      "codeSnippet": null,
+      "tags": [
+        "off-by-one",
+        "heap overflow",
+        "MTP",
+        "volume_manager_service"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-652a9c4d",
+      "cveId": "CVE-2026-49029",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/hdf_core",
+      "functionChain": [],
+      "fixDescription": "修复 drivers_hdf_core 数组越界访问漏洞",
+      "severity": "CRITICAL",
+      "codeSnippet": null,
+      "tags": [
+        "CVE-2026-49029",
+        "drivers_hdf_core",
+        "array OOB"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-e3f4a30c",
+      "cveId": null,
+      "vulnerabilityType": "权限绕过",
+      "modulePath": "foundation/communication/netmanager_base",
+      "functionChain": [],
+      "fixDescription": "修复 netmanager_base_permission.h:37 权限名错误，正确校验三方应用查询流量的权限。",
+      "severity": "HIGH",
+      "codeSnippet": "netmanager_base_permission.h:37 权限名错误；commit 7a6c8a05c 三方应用查询流量接口权限修改",
+      "tags": [
+        "权限",
+        "权限绕过",
+        "CWE-276"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-e9a099bc",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "base/security/certificate_manager",
+      "functionChain": [
+        "ParseP7b",
+        "memcpy"
+      ],
+      "fixDescription": "修复解析 p7b 证书时可能发生的内存越界问题，以及 memcpy 越界写问题。",
+      "severity": "CRITICAL",
+      "codeSnippet": "修复解析p7b证书时可能发生内存越界的问题；1aa64f9 为 memcpy 越界写修复",
+      "tags": [
+        "CWE-787",
+        "CWE-125",
+        "证书解析",
+        "越界写"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-875f3cf8",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "Array.prototype.with",
+        "js_stable_array::With"
+      ],
+      "fixDescription": "修复 js_stable_array 的 With 方法越界读取问题，commit 4af173b6d8。",
+      "severity": "CRITICAL",
+      "codeSnippet": "js_stable_array With OOB (L1=1572, L2=4af173b6d8, CWE-125)",
+      "tags": [
+        "CWE-125",
+        "越界读",
+        "js_stable_array"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-b8e65248",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [],
+      "fixDescription": "修复 MTP 处理中的堆溢出，malloc 长度增加 1 为终止符/边界预留空间。",
+      "severity": "CRITICAL",
+      "codeSnippet": "malloc 长度 +1",
+      "tags": [
+        "CWE-122",
+        "heap overflow",
+        "MTP",
+        "storage_service"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-01613e5d",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [],
+      "fixDescription": "增加 caller/path 校验，修复输入验证缺失问题 (CWE-20)",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-20",
+        "Input Validation",
+        "storage_manager_provider"
+      ],
+      "confidence": 0.8,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-59f9e106",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext/libcef",
+      "functionChain": [
+        "*pos++",
+        "*(*pos)++"
+      ],
+      "fixDescription": "修复操作符优先级错误，区分指针自增与解引用，防止越界读取。对应 CWE-125。",
+      "severity": "CRITICAL",
+      "codeSnippet": "*pos++ vs *(*pos)++",
+      "tags": [
+        "OOB read",
+        "CWE-125",
+        "operator precedence"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-2f2da7f2",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "base/security/certificate_manager/cm_x509.c",
+      "functionChain": [
+        "ParseP7bCert",
+        "CheckP7bSign"
+      ],
+      "fixDescription": "修复解析p7b证书时可能发生内存越界的问题，增加对p7->d.sign等字段的判空。修复commit: 7c6f1da（2026-06-25修复解析p7b证书时可能发生内存越界）",
+      "severity": "CRITICAL",
+      "codeSnippet": "if (p7->d.sign == NULL) { CM_LOG_E(\"p7->d.sign is null\"); return; }",
+      "tags": [
+        "CWE-125",
+        "OOB",
+        "p7b",
+        "certificate"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-4c9f2e86",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/wifi",
+      "functionChain": [
+        "memcpy_s"
+      ],
+      "fixDescription": "将 memcpy_s 的源大小从 WIFI_MAX_KEY_LEN 改为实际字符串大小，防止源缓冲区越界读。",
+      "severity": "CRITICAL",
+      "codeSnippet": "memcpy_s(dst, dstSize, src, WIFI_MAX_KEY_LEN)",
+      "tags": [
+        "OOB read",
+        "memcpy_s",
+        "wifi",
+        "CWE-125"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-513dc65d",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_api/lightweightset.cpp",
+      "functionChain": [
+        "IncreaseCapacityTo",
+        "valueArray->Set"
+      ],
+      "fixDescription": "修复扩容逻辑，确保 values 数组随 hashes 一同扩容，防止后续 Set 操作越界写",
+      "severity": "CRITICAL",
+      "codeSnippet": "JSHandle<TaggedArray> hashArray(thread, obj->GetHashes(thread)); ... valueArray->Set(thread, index, ...)",
+      "tags": [
+        "Out-of-bounds Write",
+        "heap overflow",
+        "container"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-8cd0c101",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_api/plain_array.cpp",
+      "functionChain": [
+        "AdjustArray",
+        "Set"
+      ],
+      "fixDescription": "在 AdjustArray 中添加 ASSERT 防止 srcArray->Set(thread, idx+1, value) 在数组满时越界写",
+      "severity": "CRITICAL",
+      "codeSnippet": "srcArray->Set(thread, idx + 1, value);",
+      "tags": [
+        "Out-of-bounds Write",
+        "container",
+        "ASSERT"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-63eba2e0",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [],
+      "fixDescription": "commit b0170f91c 修复 container OOB，buffer 相关越界写。",
+      "severity": "CRITICAL",
+      "codeSnippet": "",
+      "tags": [
+        "OOB",
+        "CWE-787",
+        "container"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-9ddaef9b",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "drivers/peripheral",
+      "functionChain": [
+        "OnDhcpSuccess",
+        "cb->OnDhcpSuccess()"
+      ],
+      "fixDescription": "Add null check for cb->OnDhcpSuccess before calling it.",
+      "severity": "CRITICAL",
+      "codeSnippet": "cb->OnDhcpSuccess(...); /* missing NULL check */",
+      "tags": [
+        "null pointer dereference",
+        "DHCP",
+        "callback"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-5e44ca65",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "drivers/peripheral/audio_capture_vdi.c",
+      "functionChain": [
+        "audio_capture",
+        "callback",
+        "vdi"
+      ],
+      "fixDescription": "Add locking or synchronization to the audio capture callback to prevent race condition.",
+      "severity": "HIGH",
+      "codeSnippet": "/* audio callback executed without proper locking */",
+      "tags": [
+        "race condition",
+        "audio",
+        "callback"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-3232503c",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "drivers/peripheral/power_supply_provider.cpp",
+      "functionChain": [
+        "power_supply_provider",
+        "battery path"
+      ],
+      "fixDescription": "Validate and normalize the battery supply path to prevent path traversal.",
+      "severity": "MEDIUM",
+      "codeSnippet": "/* battery path used without proper validation */",
+      "tags": [
+        "path traversal",
+        "battery",
+        "CWE-22"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-1d189c0e",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/hdf_audio",
+      "functionChain": [
+        "hdf_audio",
+        "PATHPLAN_COUNT",
+        "PATHPLAN_LEN"
+      ],
+      "fixDescription": "Change '>' to '>=' to fix an off-by-one error and use the correct buffer size PATHPLAN_LEN instead of PATHPLAN_COUNT.",
+      "severity": "CRITICAL",
+      "codeSnippet": "if (x > PATHPLAN_COUNT) { ... } /* should be >= and use PATHPLAN_LEN */",
+      "tags": [
+        "off-by-one",
+        "OOB",
+        "audio",
+        "buffer size error"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-c66696cb",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/base",
+      "functionChain": [
+        "BaseString::At",
+        "Get(thread, position+1)"
+      ],
+      "fixDescription": "修复字符串末尾孤立低代理导致 IsUTF16HighSurrogate 判断失败、以 size 下标调用 Get 造成的越界读；在 release 路径补充边界检查。",
+      "severity": "CRITICAL",
+      "codeSnippet": "Get(thread, position+1)",
+      "tags": [
+        "CWE-125",
+        "OOB Read",
+        "UTF-16 surrogate",
+        "string"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-acfee5fa",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/communication/netmanager_base",
+      "functionChain": [
+        "realpath",
+        "open"
+      ],
+      "fixDescription": "修复 realpath 检查后仍打开原路径导致的 TOCTOU 漏洞，应使用校验后的路径或避免路径被替换。",
+      "severity": "MEDIUM",
+      "codeSnippet": "realpath 检查后 open 原路径",
+      "tags": [
+        "CWE-367",
+        "TOCTOU",
+        "netmanager_base",
+        "path validation"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-855cd819",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins/builtins_string.cpp",
+      "functionChain": [
+        "IndexOf",
+        "ToInt32"
+      ],
+      "fixDescription": "修复 String.IndexOf 中 pos 参数经 ToInt32 转换时的整数溢出，防止因负值或溢出导致越界读取。",
+      "severity": "CRITICAL",
+      "codeSnippet": "",
+      "tags": [
+        "integer overflow",
+        "OOB read",
+        "builtins_string"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-288ec356",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/base/json_helper.cpp",
+      "functionChain": [
+        "PackedKey128"
+      ],
+      "fixDescription": "修复 PackedKey128 未初始化导致的未定义行为 (UB)。",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "uninitialized",
+        "CWE-457",
+        "json_helper"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-b029e1dc",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [
+        "MTPDevice::GetName",
+        "malloc",
+        "strlen"
+      ],
+      "fixDescription": "Fix off-by-one heap overflow in MTP device name allocation by using safe string copy.",
+      "severity": "CRITICAL",
+      "codeSnippet": "char *buf = malloc(MTP_DEVICE_NAME_LEN + strlen(name));",
+      "tags": [
+        "heap overflow",
+        "off-by-one"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-3195f9ed",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/ComputeElementIdAndBitId",
+      "functionChain": [
+        "ComputeElementIdAndBitId",
+        "index >> 64"
+      ],
+      "fixDescription": "修复 ComputeElementIdAndBitId 的 OOB 读：elementId = index >> 64，endIndex==length 时 elementId==size，导致越界读。",
+      "severity": "CRITICAL",
+      "codeSnippet": "elementId = index >> 64，endIndex==length 时 elementId==size → OOB 读（CWE-125）",
+      "tags": [
+        "CWE-125",
+        "OOB read",
+        "OpenHarmony"
+      ],
+      "confidence": 0.8,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-30bfe547",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [
+        "Array.map"
+      ],
+      "fixDescription": "9da773554 fix(stable_array): 修复 Array.map 越界访问；两个 stable_array 修复都是纯新增/移动 OOB 防护。",
+      "severity": "CRITICAL",
+      "codeSnippet": "fix(stable_array): 修复Array.map越界访问",
+      "tags": [
+        "CWE-125",
+        "OOB",
+        "stable_array",
+        "Array.map",
+        "OpenHarmony"
+      ],
+      "confidence": 0.8,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-b65abadd",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "third_party/icu",
+      "functionChain": [
+        "icu::UnicodeString::uString(constChar16tData)",
+        "NUL-terminated scan"
+      ],
+      "fixDescription": "修复核心：icu::UnicodeString uString(constChar16tData) 无长度参数，导致 NUL 终止扫描越界读。",
+      "severity": "CRITICAL",
+      "codeSnippet": "icu::UnicodeString uString(constChar16tData) 无长度参数 → NUL 终止扫描越界读",
+      "tags": [
+        "CWE-125",
+        "OOB read",
+        "icu",
+        "UnicodeString",
+        "OpenHarmony"
+      ],
+      "confidence": 0.8,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-4b55f39f",
+      "cveId": "CVE-2026-6309",
+      "vulnerabilityType": "其他",
+      "modulePath": "third_party/chromium",
+      "functionChain": [
+        "CVE-2026-6309"
+      ],
+      "fixDescription": "chromium_src 中的 CVE-2026-6309 double-free 修复（未覆盖的 CVE 修复）。",
+      "severity": "MEDIUM",
+      "codeSnippet": "CVE-2026-6309（double-free）",
+      "tags": [
+        "CWE-415",
+        "double-free",
+        "chromium_src",
+        "CVE"
+      ],
+      "confidence": 0.8,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-4b55f3b7",
+      "cveId": "CVE-2026-6312",
+      "vulnerabilityType": "其他",
+      "modulePath": "third_party/chromium",
+      "functionChain": [
+        "CVE-2026-6312"
+      ],
+      "fixDescription": "chromium_src 中的 CVE-2026-6312 密码泄漏修复。",
+      "severity": "MEDIUM",
+      "codeSnippet": "CVE-2026-6312（密码泄漏）",
+      "tags": [
+        "CWE-200",
+        "CWE-522",
+        "password leak",
+        "chromium_src",
+        "CVE"
+      ],
+      "confidence": 0.8,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-e91172ae",
+      "cveId": null,
+      "vulnerabilityType": "整数溢出",
+      "modulePath": "foundation/web/arkweb/NWeb",
+      "functionChain": [
+        "NWeb integer overflow"
+      ],
+      "fixDescription": "修复 NWeb integer overflow（8c9391c9d2/b489f332ac），CWE-190。",
+      "severity": "MEDIUM",
+      "codeSnippet": "integer overflow",
+      "tags": [
+        "CWE-190",
+        "integer overflow",
+        "NWeb",
+        "OpenHarmony"
+      ],
+      "confidence": 0.8,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-9c345765",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [
+        "ClearBit"
+      ],
+      "fixDescription": "提交 gc_bitset.h:101，修复非原子 ClearBit 数据竞争。",
+      "severity": "HIGH",
+      "codeSnippet": "gc_bitset.h:101（非原子 ClearBit 数据竞争）",
+      "tags": [
+        "CWE-362",
+        "data race",
+        "gc_bitset.h",
+        "OpenHarmony"
+      ],
+      "confidence": 0.8,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-e9d8955f",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/web/web_webview",
+      "functionChain": [
+        "cj_cert_manager_ffi.c:115",
+        "strdup"
+      ],
+      "fixDescription": "修复 cj_cert_manager_ffi.c:115 的 memory leak（L2=0095071a）。每次迭代对 element 0 执行 strdup 导致泄漏，且其他元素为 NULL 未释放，应释放 strdup 结果或改用所有权明确的容器。",
+      "severity": "MEDIUM",
+      "codeSnippet": "always element 0 -> strdup leak each iter + other elements NULL (memory leak, CWE-401)",
+      "tags": [
+        "memory-leak",
+        "CWE-401",
+        "strdup"
+      ],
+      "confidence": 0.8,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-28485ef3",
       "cveId": "",
       "vulnerabilityType": "条件竞争",
       "modulePath": "arkcompiler/ets_runtime",
-      "functionChain": ["CheckPermission", "AsyncTask", "UseResource"],
+      "functionChain": [
+        "CheckPermission",
+        "AsyncTask",
+        "UseResource"
+      ],
       "fixDescription": "权限校验与资源使用之间被异步任务抢占，存在 TOCTOU 窗口",
       "severity": "MEDIUM",
       "codeSnippet": "if (CheckPermission()) { async_task([this]{ UseResource(); }); }",
-      "tags": ["条件竞争", "TOCTOU", "权限"],
+      "tags": [
+        "条件竞争",
+        "TOCTOU",
+        "权限"
+      ],
       "confidence": 0.75,
       "needsReview": false
+    },
+    {
+      "id": "ohos-a12b1db5",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/web_webview",
+      "functionChain": [
+        "GetHttpAuthCredentials",
+        "SaveHttpAuthCredentials"
+      ],
+      "fixDescription": "Before taking the address of the first element of `passwordVector`, check whether the vector is empty. Calling `&passwordVector[0]` on an empty vector is undefined behavior and can lead to an out-of-bounds read.",
+      "severity": "HIGH",
+      "codeSnippet": "&passwordVector[0]",
+      "tags": [
+        "CWE-125",
+        "Empty Vector",
+        "HTTP Authentication"
+      ],
+      "confidence": 0.75,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-1449dc66",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [
+        "Reduce"
+      ],
+      "fixDescription": "修复 Reduce 操作中的越界读，添加数组长度检查或调整索引边界。",
+      "severity": "HIGH",
+      "codeSnippet": "// js_stable_array.cpp:1677 (执行行)",
+      "tags": [
+        "OOB read",
+        "Reduce",
+        "memory corruption"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-b08306fe",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/wifi/frameworks/native/c_adapter/src/wifi_c_device.cpp",
+      "functionChain": [
+        "wifi_c_device.cpp:207",
+        "memcpy_s(result->preSharedKey, WIFI_MAX_KEY_LEN, deviceConfig.preSharedKey.c_str(), WIFI_MAX_KEY_LEN)"
+      ],
+      "fixDescription": "使用实际字符串长度（如 strlen + 1）代替固定 WIFI_MAX_KEY_LEN 作为拷贝长度，避免字符串短于 64 字节时从 c_str() 越界读取堆内存。",
+      "severity": "HIGH",
+      "codeSnippet": "memcpy_s(result->preSharedKey, WIFI_MAX_KEY_LEN, deviceConfig.preSharedKey.c_str(), WIFI_MAX_KEY_LEN)",
+      "tags": [
+        "CWE-125",
+        "越界读",
+        "信息泄露",
+        "communication_wifi",
+        "Nday"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-8f4f257b",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/multimedia/audio_framework",
+      "functionChain": [
+        "IsPlaybackChannelRelatedInfoValid / IsRecordChannelRelatedInfoValid",
+        "channels 与 channelLayout 匹配性校验缺失",
+        "下游按 channelLayout 实际声道数读写"
+      ],
+      "fixDescription": "同时校验 channels 与 channelLayout 是否匹配，防止构造 channels=2 + channelLayout=CH_LAYOUT_5POINT1 绕过检查后造成越界读写。",
+      "severity": "HIGH",
+      "codeSnippet": "i_audio_stream.cpp:302-315 channelLayout 与 channels 不匹配 -> 越界写",
+      "tags": [
+        "CWE-787",
+        "越界写",
+        "channelLayout",
+        "audio",
+        "Nday"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-4c3bc3be",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "JSHandle<BigInt>::Cast",
+        "ToInt64"
+      ],
+      "fixDescription": "在 Cast 前检查 value 类型，或使用安全的 ToBigInt64 转换，避免对非 BigInt 值强转导致非法内存访问。",
+      "severity": "MEDIUM",
+      "codeSnippet": "JSHandle<BigInt>::Cast(value)->ToInt64()",
+      "tags": [
+        "type-confusion",
+        "oob-read"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-dea02219",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "Buffer::Fill",
+        "fastbuffer"
+      ],
+      "fixDescription": "修复 fastbuffer OOB 问题（commit cc34c9ef4）",
+      "severity": "HIGH",
+      "codeSnippet": "BUILTINS_API_TRACE(argv->GetThread(), Buffer, Fill);",
+      "tags": [
+        "fastbuffer",
+        "OOB",
+        "Buffer",
+        "ets_runtime"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-2a132763",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/buffer.cpp",
+      "functionChain": [
+        "Base64Decode"
+      ],
+      "fixDescription": "添加 ASSERT(cursor + 4 <= len) 防止 table[data[cursor]] 在 cursor 接近 len 时越界读",
+      "severity": "HIGH",
+      "codeSnippet": "charArray4[0] = table[data[cursor]];",
+      "tags": [
+        "Out-of-bounds Read",
+        "base64",
+        "buffer"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-6e104e0d",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/containers/containers_vector.cpp",
+      "functionChain": [
+        "Sort",
+        "elements->Set"
+      ],
+      "fixDescription": "commit b8c5b275f 修复 vector Sort 的越界写，删除块中包含 elements->Set OOB 写。",
+      "severity": "HIGH",
+      "codeSnippet": "elements->Set(thread, j, ...)",
+      "tags": [
+        "OOB",
+        "CWE-787",
+        "Sort"
+      ],
+      "confidence": 0.75,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-1a202b64",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/usb_interface_pool.c",
+      "functionChain": [
+        "usb_interface_pool",
+        "interface allocation"
+      ],
+      "fixDescription": "Add a bounds check before writing to the USB interface pool.",
+      "severity": "HIGH",
+      "codeSnippet": "/* missing boundary check in usb_interface_pool write */",
+      "tags": [
+        "OOB Write",
+        "USB",
+        "interface pool"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-35f5c780",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/sensor_channel.c",
+      "functionChain": [
+        "sensor_channel",
+        "len check"
+      ],
+      "fixDescription": "Add missing length check before reading sensor data to prevent out-of-bounds read.",
+      "severity": "HIGH",
+      "codeSnippet": "/* sensor data read without length check */",
+      "tags": [
+        "OOB Read",
+        "sensor",
+        "missing len check"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-bff30bfa",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins",
+      "functionChain": [],
+      "fixDescription": "修复 ArrayBuffer 中 impure NaN 导致的类型混淆，删除 arraybuffer.cpp 第 550 行的错误处理。",
+      "severity": "MEDIUM",
+      "codeSnippet": "arraybuffer.cpp:550 删除行",
+      "tags": [
+        "CWE-843",
+        "Type Confusion",
+        "ArrayBuffer",
+        "impure NaN"
+      ],
+      "confidence": 0.75,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-f1c02487",
+      "cveId": "",
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/multimedia/camera_framework",
+      "functionChain": [
+        "HCaptureStream::Release",
+        "sp_holder"
+      ],
+      "fixDescription": "Fix sp_holder lifecycle management to prevent use-after-free in hstream_capture.",
+      "severity": "HIGH",
+      "codeSnippet": "sptr<HStreamCapture> sp_holder; // dangling after release",
+      "tags": [
+        "UAF",
+        "sp_holder"
+      ],
+      "confidence": 0.75,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-a232ef7a",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "fastbuffer"
+      ],
+      "fixDescription": "52460cb88 'Fix fastbuffer oob' 是原始修复（宏的引入者）。",
+      "severity": "HIGH",
+      "codeSnippet": "Fix fastbuffer oob",
+      "tags": [
+        "OOB",
+        "fastbuffer",
+        "OpenHarmony"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-0c22eea4",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "base/security",
+      "functionChain": [
+        "Base64Decode"
+      ],
+      "fixDescription": "c8f06e473 是 Base64Decode OOB 修复（153 范围，未覆盖过）。",
+      "severity": "HIGH",
+      "codeSnippet": "Base64Decode OOB 修复",
+      "tags": [
+        "CWE-125",
+        "OOB",
+        "Base64Decode",
+        "OpenHarmony"
+      ],
+      "confidence": 0.75,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-b297dde0",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "base/security/certificate_manager/uri.c",
+      "functionChain": [
+        "uri.c",
+        "strlen"
+      ],
+      "fixDescription": "Fix commit 7d63cc6 replaces `strlen` with `strnlen` at uri.c:90 to prevent an out-of-bounds read when processing an untrusted string without a guaranteed NUL terminator.",
+      "severity": "HIGH",
+      "codeSnippet": "strlen(value)  // dangerous on non-NUL-terminated input",
+      "tags": [
+        "OOB Read",
+        "CertificateManager",
+        "strlen",
+        "CWE-125"
+      ],
+      "confidence": 0.72,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-d53c9a34",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [
+        "UpdatePidByPath",
+        "KillProcess"
+      ],
+      "fixDescription": "修复 UpdatePidByPath 与 KillProcess 之间的 TOCTOU 问题，避免路径或进程状态在检查后被篡改，可能通过增加锁或重校验机制。",
+      "severity": "HIGH",
+      "codeSnippet": null,
+      "tags": [
+        "TOCTOU",
+        "race condition",
+        "process kill",
+        "privilege escalation"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-7aa04051",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "drivers/peripheral/sensor",
+      "functionChain": [
+        "SetFlags(event.mode)",
+        "sensorMap_.end() 判空"
+      ],
+      "fixDescription": "将 sensorMap_.end() 判空检查提前到 sensor->second.SetFlags(event.mode) 之前，避免 sensorId 不在 sensorMap_ 时解引用空迭代器。",
+      "severity": "HIGH",
+      "codeSnippet": "第 207 行 sensor->second.SetFlags(event.mode) 在 sensor == sensorMap_.end() 判空（第 208 行）之前解引用",
+      "tags": [
+        "CWE-476",
+        "空指针解引用",
+        "sensor",
+        "Nday"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-59b056de",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "Array.prototype.splice",
+        "Container",
+        "TreeMap"
+      ],
+      "fixDescription": "修复 arkcompiler 中 container OOB、splice OOB、treemap 越界等问题。",
+      "severity": "HIGH",
+      "codeSnippet": "b0170f91c container OOB; 4ad840c8d splice OOB; f36c3aa01 treemap 越界修复",
+      "tags": [
+        "CWE-787",
+        "CWE-125",
+        "越界",
+        "容器"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-94362a7b",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "fastbuffer",
+        "constpool"
+      ],
+      "fixDescription": "修复 fastbuffer 越界访问及 constpool overflow 问题，commit cc34c9ef4 和 18458317。",
+      "severity": "HIGH",
+      "codeSnippet": "cc34c9ef4 fastbuffer OOB; 18458317 fix constpool overflow bug",
+      "tags": [
+        "CWE-787",
+        "CWE-190",
+        "fastbuffer",
+        "constpool"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-6a3b620f",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_stable_array.cpp",
+      "functionChain": [],
+      "fixDescription": "Fix array with OOB when splice is called (commit 4ad840c8d)",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "out-of-bounds",
+        "splice",
+        "array"
+      ],
+      "confidence": 0.7,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-8131fc26",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/multimedia/audio_framework/audio_service.cpp",
+      "functionChain": [],
+      "fixDescription": "修复 splice 调用时数组越界问题（Fix array with oob when splice is called）。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "OOB",
+        "splice",
+        "audio_service"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-ee3cb96c",
+      "cveId": "CVE-2026-24792",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext/libcef",
+      "functionChain": [],
+      "fixDescription": "修复条件竞争漏洞，需要对共享资源的访问加锁或使用原子操作。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "race condition",
+        "CWE-362"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-5d94f719",
+      "cveId": "CVE-2026-27648",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext/libcef",
+      "functionChain": [],
+      "fixDescription": "修复越界写漏洞，需要增加缓冲区边界校验。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "OOB write",
+        "CWE-787"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-70257f7a",
+      "cveId": "CVE-2026-4441",
+      "vulnerabilityType": "UAF",
+      "modulePath": "base/callback_list.h",
+      "functionChain": [
+        "Notify",
+        "removal_callback_.Run()"
+      ],
+      "fixDescription": "重构 base::CallbackList 以修复 re-entrant Notify 引发的 Use-After-Free，删除 erased_callbacks 计算与 removal_callback_.Run() 的同步执行。",
+      "severity": "HIGH",
+      "codeSnippet": "erased_callbacks = ...; removal_callback_.Run();",
+      "tags": [
+        "UAF",
+        "callback_list",
+        "reentrancy"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-5dba06b5",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "base/security/certificate_manager",
+      "functionChain": [
+        "CheckFilePath"
+      ],
+      "fixDescription": "修复路径穿越问题，对用户输入路径进行合法性检查，防止越权访问文件。修复commit: 2b6fc8257f1de58a7ab34175db01bcb63a65e39e",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-22",
+        "path traversal",
+        "certificate_manager"
+      ],
+      "confidence": 0.7,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-7716c776",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "base/security/certificate_manager/storage.c",
+      "functionChain": [
+        "StorageInit"
+      ],
+      "fixDescription": "在申请内存后增加memset初始化，避免使用未初始化内存。修复commit: 4ea7937（2025-12-29申请内存增加memset）",
+      "severity": "MEDIUM",
+      "codeSnippet": "memset(ptr, 0, size);",
+      "tags": [
+        "CWE-457",
+        "uninitialized memory",
+        "storage"
+      ],
+      "confidence": 0.7,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-6cfd1a50",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/buffer.cpp",
+      "functionChain": [
+        "Compare",
+        "memcmp"
+      ],
+      "fixDescription": "添加 sStart>=sEnd 检查，防止 aCmpLength 下溢导致 memcmp 越界读",
+      "severity": "HIGH",
+      "codeSnippet": "uint32_t aCmpLength = sEnd - sStart; ... memcmp(aPointer, bPointer, length);",
+      "tags": [
+        "Out-of-bounds Read",
+        "integer underflow",
+        "buffer"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-6eb59671",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [
+        "runtime_stubs",
+        "recursive call",
+        "STACK_LIMIT_CHECK"
+      ],
+      "fixDescription": "Add missing stack limit check to prevent uncontrolled recursion / stack exhaustion.",
+      "severity": "MEDIUM",
+      "codeSnippet": "/* missing STACK_LIMIT_CHECK before recursive call */",
+      "tags": [
+        "uncontrolled recursion",
+        "stack exhaustion",
+        "stubs"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-bd863226",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral",
+      "functionChain": [
+        "UsbAdapterUrb",
+        "isoFrameDesc[0]",
+        "iso URB"
+      ],
+      "fixDescription": "Fix zero-length array isoFrameDesc[0] handling to prevent heap overflow in iso URB processing.",
+      "severity": "HIGH",
+      "codeSnippet": "UsbAdapterUrb::isoFrameDesc[0]; /* zero-length array -> heap overflow */",
+      "tags": [
+        "heap overflow",
+        "USB",
+        "iso URB"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-20daadf2",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/exif",
+      "functionChain": [
+        "exif",
+        "dataBuffer"
+      ],
+      "fixDescription": "Fix dataBuffer out-of-bounds read reported by AI/review.",
+      "severity": "HIGH",
+      "codeSnippet": "/* exif dataBuffer access without proper bound */",
+      "tags": [
+        "OOB Read",
+        "exif",
+        "dataBuffer"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-84e71df5",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/web_webview/interfaces/kits/napi/webviewcontroller/webview_controller.cpp",
+      "functionChain": [
+        "injectOfflineResources",
+        "urlList empty",
+        "container operator[] access",
+        "Process crash"
+      ],
+      "fixDescription": "在 injectOfflineResources 中访问 urlList 元素前检查容器是否为空，避免对空容器执行 operator[] 的未定义行为导致进程确定性崩溃。",
+      "severity": "HIGH",
+      "codeSnippet": "urlList[0] // called when urlList is empty",
+      "tags": [
+        "web_webview",
+        "CWE-125",
+        "Empty Container",
+        "Denial of Service",
+        "NAPI",
+        "0day"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-dc454425",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "base/storage/storage_manager/services/storage_manager/volume/volume_manager.cpp",
+      "functionChain": [
+        "VolumeManager",
+        "StorageRLMap"
+      ],
+      "fixDescription": "Fix volumeMap condition race by replacing StorageRLMap with std::map plus mutex in volume_manager.cpp and volume_manager_service.cpp.",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-362",
+        "race condition",
+        "storage",
+        "volumeMap"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-12d86b13",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "AbcBufferCacheScope::~AbcBufferCacheScope"
+      ],
+      "fixDescription": "AbcBufferCacheScope 析构误释放活跃内存导致 UAF；修复测试用例 UAF 及 tcache 损坏",
+      "severity": "HIGH",
+      "codeSnippet": "fix: AbcBufferCacheScope析构误释放活跃内存 (751ddae20f)",
+      "tags": [
+        "UAF",
+        "abc-buffer-cache",
+        "fix"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-1685066a",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "third_party/chromium/arkweb/ohos_nweb/src/cef_delegate/nweb_handler_delegate.cc",
+      "functionChain": [],
+      "fixDescription": "修复 nweb_handler_delegate.cc 中越界访问可能性",
+      "severity": "HIGH",
+      "codeSnippet": "越界访问可能性修复",
+      "tags": [
+        "OOB",
+        "nweb"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-4267b4bc",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/compiler",
+      "functionChain": [],
+      "fixDescription": "修复 JIT 数组负索引导致的越界写，修正 signed/unsigned 比较使负索引无法绕过边界检查。",
+      "severity": "HIGH",
+      "codeSnippet": "signed→unsigned 比较",
+      "tags": [
+        "CWE-787",
+        "OOB Write",
+        "negative index",
+        "JIT"
+      ],
+      "confidence": 0.7,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-a7242e43",
+      "cveId": "",
+      "vulnerabilityType": "权限绕过",
+      "modulePath": "foundation/communication/netmanager_base",
+      "functionChain": [
+        "CheckUidPermission"
+      ],
+      "fixDescription": "修复 UID 权限检查逻辑，确保权限校验覆盖所有调用路径，防止未授权访问。",
+      "severity": "HIGH",
+      "codeSnippet": "CheckUidPermission",
+      "tags": [
+        "CWE-862",
+        "permission bypass",
+        "UID",
+        "netmanager_base"
+      ],
+      "confidence": 0.7,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-826b9576",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/multimedia/camera_framework",
+      "functionChain": [
+        "volumeMap"
+      ],
+      "fixDescription": "为 volumeMap 的访问和更新增加同步机制，修复条件竞争漏洞。",
+      "severity": "HIGH",
+      "codeSnippet": "c6fae10558fc46ae14d7f4c0f447c2a662bc6380 修复volumeMap条件竞争漏洞",
+      "tags": [
+        "CWE-362",
+        "条件竞争",
+        "camera"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-745008ac",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins/builtins_shared_array.cpp",
+      "functionChain": [
+        "Splice"
+      ],
+      "fixDescription": "修复 SharedArray.prototype.splice 中因裸指针导致的 GC 后悬垂引用（UAF），将裸指针改为 JSHandle 管理。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "UAF",
+        "GC",
+        "builtins_shared_array"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-53b42cfb",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/base/string_helper.cpp",
+      "functionChain": [
+        "StringToInt"
+      ],
+      "fixDescription": "修复 StringToInt 对空字符串或越界字符的 OOB 读漏洞，在 *start 读取前增加边界检查。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "OOB read",
+        "StringToInt",
+        "base"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-6d000790",
+      "cveId": "",
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/multimedia/camera_framework/picture_assembler.cpp",
+      "functionChain": [
+        "PictureAssembler::Process",
+        "sp_holder"
+      ],
+      "fixDescription": "Fix sp_holder UAF in picture_assembler.cpp.",
+      "severity": "HIGH",
+      "codeSnippet": "sptr<Picture> picture = sp_holder; // pointer invalid after release",
+      "tags": [
+        "UAF",
+        "picture_assembler"
+      ],
+      "confidence": 0.7,
+      "needsReview": false
+    },
+    {
+      "id": "ohos-88265943",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "arkcompiler/ets_runtime/shared_cc.cpp",
+      "functionChain": [
+        "shared_cc"
+      ],
+      "fixDescription": "b7f0e9484 修复 shared_cc.cpp 的 UAF（139 范围，7月31日新 commit）。",
+      "severity": "HIGH",
+      "codeSnippet": "shared_cc.cpp UAF",
+      "tags": [
+        "CWE-416",
+        "UAF",
+        "shared_cc",
+        "OpenHarmony"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-f97cac84",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext",
+      "functionChain": [
+        "state_size",
+        "stack buffer"
+      ],
+      "fixDescription": "cef 的 53ff13b7 修复栈数组 state_size 导致的栈溢出；需要验证参考状态下的行号。",
+      "severity": "HIGH",
+      "codeSnippet": "栈数组 state_size → 栈溢出",
+      "tags": [
+        "CWE-121",
+        "stack overflow",
+        "cef",
+        "OpenHarmony"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-a0dd3d22",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext",
+      "functionChain": [
+        "cef UAF"
+      ],
+      "fixDescription": "cef UAF 修复（c9c7d917，1月）。",
+      "severity": "HIGH",
+      "codeSnippet": "cef UAF",
+      "tags": [
+        "CWE-416",
+        "UAF",
+        "cef",
+        "OpenHarmony"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-bcd0d8f5",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/filemanagement/storage_service/key_manager.cpp",
+      "functionChain": [
+        "key_manager.cpp:490",
+        "std::lock_guard<std::mutex> lock(keyMutex_);"
+      ],
+      "fixDescription": "commit f95828e17f5e 移动 keyMutex_ 锁的位置，修复 InitGlobalUserKeys 中的锁竞争/竞态问题，确保全局密钥初始化临界区正确互斥。",
+      "severity": "HIGH",
+      "codeSnippet": "std::lock_guard<std::mutex> lock(keyMutex_);",
+      "tags": [
+        "race-condition",
+        "CWE-362",
+        "key-manager"
+      ],
+      "confidence": 0.7,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-d0d02e8e",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/containers/js_api_buffer.cpp",
+      "functionChain": [
+        "AllocateFromBufferObject"
+      ],
+      "fixDescription": "Fix commit cc34c9ef4 addresses an OOB issue in `AllocateFromBufferObject` (js_api_buffer.cpp:621-630). The fix adds proper bounds/capacity validation before buffer allocation, preventing out-of-bounds access in fastbuffer operations.",
+      "severity": "HIGH",
+      "codeSnippet": "AllocateFromBufferObject(...) // missing bounds validation before allocation",
+      "tags": [
+        "OOB",
+        "ets_runtime",
+        "js_api_buffer",
+        "fastbuffer",
+        "CWE-125/787"
+      ],
+      "confidence": 0.68,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-620df8c5",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [],
+      "fixDescription": "修复 gc_bitset.h 中存在的数据竞争问题，通过加锁或内存同步机制保证多线程安全。",
+      "severity": "HIGH",
+      "codeSnippet": null,
+      "tags": [
+        "data race",
+        "GC",
+        "concurrency"
+      ],
+      "confidence": 0.65,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-62f0a07a",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [
+        "IsCompatiblePropertyDescriptor",
+        "ObjectOperator"
+      ],
+      "fixDescription": "初始化 ObjectOperator 对象成员，避免使用未初始化内存导致 UAF 或未定义行为。",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "uninitialized-memory",
+        "uaf",
+        "object-operator"
+      ],
+      "confidence": 0.65,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-61d04b5a",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/netmanager_base",
+      "functionChain": [],
+      "fixDescription": "修复在栈上分配大对象导致的栈溢出，将栈对象改为堆分配。",
+      "severity": "HIGH",
+      "codeSnippet": "栈对象→堆分配修复",
+      "tags": [
+        "CWE-770",
+        "stack overflow",
+        "resource exhaustion",
+        "netmanager_base"
+      ],
+      "confidence": 0.65,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-695780f9",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "jitfort"
+      ],
+      "fixDescription": "6.0.0.2 官方修复包成员 65ebb4e96 修复 jitfort data race；已探测 Wrong，但漏洞模式在日志中出现。",
+      "severity": "HIGH",
+      "codeSnippet": "65ebb4e96 jitfort data race",
+      "tags": [
+        "CWE-362",
+        "data race",
+        "jitfort",
+        "OpenHarmony"
+      ],
+      "confidence": 0.65,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-e54d5bba",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "base/security/certificate_manager/cm_x509.c",
+      "functionChain": [
+        "parseP7B",
+        "signature check",
+        "cm_x509.c"
+      ],
+      "fixDescription": "Fix commit 7c6f1da adds missing checks when parsing p7b certificates to prevent memory out-of-bounds access; the vulnerable condition is around the `p7->d.sign == NULL` check.",
+      "severity": "HIGH",
+      "codeSnippet": "p7->d.sign == NULL",
+      "tags": [
+        "OOB",
+        "CertificateManager",
+        "p7b",
+        "CWE-125/787"
+      ],
+      "confidence": 0.65,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-2414d77c",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/containers",
+      "functionChain": [
+        "ArrayList::Sort",
+        "elements->Get",
+        "elements->Set"
+      ],
+      "fixDescription": "Fix commit b8c5b275f removes vulnerable deletion lines 589-617 in the ArrayList sort logic. The sorting loop calls `elements->Get`/`elements->Set` without adequate bounds enforcement, allowing an out-of-bounds write when sorting with a custom callbackfn.",
+      "severity": "HIGH",
+      "codeSnippet": "elements->Set(i, elements->Get(j));  // in sort loop with insufficient bounds checks",
+      "tags": [
+        "OOB Write",
+        "ArrayList",
+        "ets_runtime",
+        "CWE-787"
+      ],
+      "confidence": 0.62,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-0df04cd8",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/web_webview",
+      "functionChain": [
+        "Download",
+        "parseDownloadPath"
+      ],
+      "fixDescription": "Validate `pathLen` and host name length to prevent stack buffer overflow caused by `char stringValue[pathLen+1]` when `pathLen` is too large or host exceeds allowed limits.",
+      "severity": "HIGH",
+      "codeSnippet": "char stringValue[pathLen+1]",
+      "tags": [
+        "CWE-787",
+        "Stack Buffer Overflow",
+        "Download"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-acfffa88",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/communication/wifi/base/security_utils/src/wifi_openssl_utils.cpp",
+      "functionChain": [
+        "OpensslAesDecrypt",
+        "EVP_DecryptUpdate",
+        "plainText / plainTextLen 未判空"
+      ],
+      "fixDescription": "对 plainText 和 plainTextLen 增加空指针检查；修复 commit 7f47073a3（!4460），避免空指针时崩溃。",
+      "severity": "HIGH",
+      "codeSnippet": "OpensslAesDecrypt 中仅检查 cipherText/cipherTextLen/info，缺少 plainText 与 plainTextLen 空指针检查",
+      "tags": [
+        "CWE-476",
+        "空指针解引用",
+        "AES",
+        "communication_wifi",
+        "Nday"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-b2889240",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/wifi",
+      "functionChain": [
+        "EncodeBase64"
+      ],
+      "fixDescription": "修复 EncodeBase64 输出缓冲区长度计算错误，避免堆越界写。相关修复 commit：b27dd4d3d / 88324d6ba。",
+      "severity": "HIGH",
+      "codeSnippet": "EncodeBase64 堆越界写（CWE-787）",
+      "tags": [
+        "CWE-787",
+        "堆越界写",
+        "Base64",
+        "communication_wifi",
+        "Nday"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-829242f2",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/multimedia/medical/medical_data_processer.cpp",
+      "functionChain": [
+        "medical_data_processer.cpp:150-156/250",
+        "FIFO UAF 读"
+      ],
+      "fixDescription": "修复 FIFO 读写过程中对已释放内存的访问，确保释放后不再引用相关缓冲区。",
+      "severity": "HIGH",
+      "codeSnippet": "medical_data_processer.cpp:150-156/250 — FIFO UAF 读（CWE-416）",
+      "tags": [
+        "CWE-416",
+        "UAF",
+        "FIFO",
+        "medical",
+        "Nday"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-d7010138",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "drivers/peripheral/sensor",
+      "functionChain": [
+        "sensor_event_callback.cpp:41-43",
+        "HDI 数据拷贝"
+      ],
+      "fixDescription": "修复 HDI 上报数据写入时未严格校验长度造成的堆越界写。",
+      "severity": "HIGH",
+      "codeSnippet": "sensor_event_callback.cpp:41-43 — HDI 数据堆越界写（CWE-787）",
+      "tags": [
+        "CWE-787",
+        "堆越界写",
+        "HDI",
+        "sensor",
+        "Nday"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-73cffc4e",
+      "cveId": null,
+      "vulnerabilityType": "权限绕过",
+      "modulePath": "foundation/communication/wifi",
+      "functionChain": [
+        "P2P callback 注册",
+        "pid/tokenId 校验缺失"
+      ],
+      "fixDescription": "对 P2P callback 注册时的 pid/tokenId 进行合法性校验，防止进程身份欺骗注册回调。",
+      "severity": "HIGH",
+      "codeSnippet": "P2P callback 注册 pid/tokenId 欺骗（61d2966...）",
+      "tags": [
+        "权限绕过",
+        "pid/tokenId",
+        "P2P",
+        "communication_wifi",
+        "Nday"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-bb6e28be",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/communication/netmanager_base/services/netmanagernative",
+      "functionChain": [
+        "BindSocket",
+        "close"
+      ],
+      "fixDescription": "在 BindSocket 失败路径调用 close(fd) 释放文件描述符，防止 FD 泄漏。",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "fd-leak",
+        "resource-leak"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-0d621be3",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/multimedia/video_processing_engine",
+      "functionChain": [],
+      "fixDescription": "修复 video_processing_engine 中存在的越界写漏洞。",
+      "severity": "HIGH",
+      "codeSnippet": "L3=CWE-787（越界写）",
+      "tags": [
+        "CWE-787",
+        "越界写"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-d7058307",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [],
+      "fixDescription": "修复测试用例中 UAF 及 tcache 损坏问题，commit f7b00946d。",
+      "severity": "MEDIUM",
+      "codeSnippet": "f7b00946d 2026-07-18 修复测试用例UAF及tcache损坏",
+      "tags": [
+        "CWE-416",
+        "UAF",
+        "tcache"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-fbcb1526",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "evacuator",
+        "VM destruction"
+      ],
+      "fixDescription": "修复 SharedGC evacuator 在 VM 销毁时的 use-after-free 问题",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "UAF",
+        "SharedGC",
+        "VM destruction"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-c9e33498",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [
+        "AsyncGenerator",
+        "PromiseResolve"
+      ],
+      "fixDescription": "修复 AsyncGenerator PromiseResolve 中栈溢出未处理的异常",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "Stack Overflow",
+        "Unhandled Exception",
+        "AsyncGenerator"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-394ee6ae",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "base/security/certificate_manager/query.c",
+      "functionChain": [
+        "GetUserCertAlias"
+      ],
+      "fixDescription": "修复query.c中GetUserCertAlias函数的strlen相关栈越界写问题。修复commit: 1aa64f96（防止栈越界写）",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-787",
+        "stack overflow",
+        "strlen"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-61d62daa",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "unknown",
+      "functionChain": [],
+      "fixDescription": "修复路径穿越漏洞，修改 file_operator.c 和 cert_manager_check.c，增加路径规范化/校验。",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-22",
+        "path traversal",
+        "file_operator.c",
+        "cert_manager_check.c"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-577ba58c",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "tagged_tree::Insert"
+      ],
+      "fixDescription": "修复 tagged_tree Insert 的越界问题：重置 NumberOfDeletedElements 并加强边界检查。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-787",
+        "OOB",
+        "tagged_tree",
+        "ets_runtime"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-89bc0675",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/buffer.cpp",
+      "functionChain": [
+        "NewUint8Array",
+        "AllocateTypedArrayBuffer"
+      ],
+      "fixDescription": "将 AllocateTypedArrayBuffer 包进 if (length > 0)，防止 length=0 时分配越界",
+      "severity": "HIGH",
+      "codeSnippet": "if (length > 0) { AllocateTypedArrayBuffer(...); }",
+      "tags": [
+        "Out-of-bounds Write",
+        "typed array",
+        "zero length"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-b3f7c41c",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime/process.cpp",
+      "functionChain": [],
+      "fixDescription": "修复 TOCTOU 竞态问题，可能涉及检查后使用的一致性或加锁。",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "TOCTOU",
+        "CWE-367",
+        "race"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-f81803d4",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/js_api/js_api_buffer.cpp",
+      "functionChain": [
+        "JSAPIBuffer::FromArrayBuffer"
+      ],
+      "fixDescription": "Potential fastbuffer OOB issue in js_api_buffer.cpp:277 (FromArrayBuffer), referenced by candidate commit cc34c9ef4. Needs further verification.",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-125",
+        "OOB read",
+        "js_api_buffer",
+        "fastbuffer"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-e823651a",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/communication/netmanager_base/frameworks/native/netmanager/net_manager_native.cpp",
+      "functionChain": [
+        "net_manager_native.cpp:128"
+      ],
+      "fixDescription": "Challenge rules indicate CWE-78 command injection at net_manager_native.cpp:128, but local line probing failed; requires verification against the correct line-number system.",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-78",
+        "command injection",
+        "netmanager"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-d62a30c5",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/netmanager_base/frameworks/native/netmanager/net_manager_native.cpp",
+      "functionChain": [
+        "net_manager_native.cpp:128"
+      ],
+      "fixDescription": "Challenge rules indicate CWE-787 out-of-bounds write at net_manager_native.cpp:128, but local line probing failed; requires verification against the correct line-number system.",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-787",
+        "OOB write",
+        "netmanager"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-2841cbec",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/multimedia/camera_framework",
+      "functionChain": [],
+      "fixDescription": "修复 camera_framework 中 volumeMap 条件竞争漏洞（commit c6fae10558）",
+      "severity": "HIGH",
+      "codeSnippet": "N/A",
+      "tags": [
+        "c6fae10558",
+        "camera_framework",
+        "volumeMap",
+        "race condition"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-7315b1a2",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext",
+      "functionChain": [],
+      "fixDescription": "TOCTOU问题修复 (commit 2f08c03a99f65a2b6975e827478ace787602922d)",
+      "severity": "HIGH",
+      "codeSnippet": "2f08c03a99f65a2b6975e827478ace787602922d TOCTOU问题修复",
+      "tags": [
+        "TOCTOU",
+        "CWE-367"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-9a301901",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins",
+      "functionChain": [
+        "VisitAll"
+      ],
+      "fixDescription": "在 JIT 数组迭代 VisitAll 中增加数组长度/稳定性检查，修复越界读取。",
+      "severity": "HIGH",
+      "codeSnippet": "VisitAll 长度/稳定性检查",
+      "tags": [
+        "CWE-125",
+        "OOB Read",
+        "JIT",
+        "array iterator"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-36a94491",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [
+        "flowbuf",
+        "dataList[curIndex]"
+      ],
+      "fixDescription": "修复 flowbuf 越界读及 dataList[curIndex] 数组越界写，补充 curIndex < dataListSize 边界检查。",
+      "severity": "HIGH",
+      "codeSnippet": "dataList[curIndex]",
+      "tags": [
+        "CWE-129",
+        "CWE-787",
+        "OOB Write",
+        "flowbuf",
+        "index validation"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-1f3aba91",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins/builtins_arraybuffer.cpp",
+      "functionChain": [],
+      "fixDescription": "修复写入时使用字典条目索引 *idx 而非实际数组索引 key 导致的越界写问题，并确保取值时走 getter 逻辑。",
+      "severity": "HIGH",
+      "codeSnippet": "*idx (dict entry index) != key (actual array index)",
+      "tags": [
+        "CWE-787",
+        "OOB写",
+        "数组索引",
+        "Accepted"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-dfcdfd0d",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript",
+      "functionChain": [
+        "CopyElementsToArrayBuffer"
+      ],
+      "fixDescription": "先拷贝 elementsArray 再读取，避免在拷贝过程中底层数组被并发修改造成竞态/TOCTOU 问题。",
+      "severity": "HIGH",
+      "codeSnippet": "CopyElementsToArrayBuffer at builtins_typedarray_stub_builder.cpp:3537-3548 reads from elementsArray directly",
+      "tags": [
+        "CWE-367",
+        "TOCTOU",
+        "竞态",
+        "typedarray"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-66de6e97",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/filemanagement/storage_service",
+      "functionChain": [
+        "RawDataCpy"
+      ],
+      "fixDescription": "Fix double free in RawDataCpy (CWE-415).",
+      "severity": "MEDIUM",
+      "codeSnippet": "free(ptr); ... free(ptr); // double free",
+      "tags": [
+        "double free",
+        "CWE-415"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-501ccbd2",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "GetEncodingType",
+        "JSHandle<EcmaString>"
+      ],
+      "fixDescription": "Add IsString check in GetEncodingType before static_cast to avoid type confusion and OOB read.",
+      "severity": "MEDIUM",
+      "codeSnippet": "JSHandle<EcmaString> str = JSHandle<EcmaString>(encode); // missing type check",
+      "tags": [
+        "type confusion",
+        "CWE-843"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-9c8a3136",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "delete[]",
+      "functionChain": [
+        "new[]",
+        "delete[]"
+      ],
+      "fixDescription": "00fa02a2e 修复 delete[] 错配；已探测 Wrong，但漏洞模式在日志中出现。",
+      "severity": "MEDIUM",
+      "codeSnippet": "00fa02a2e delete[] 错配",
+      "tags": [
+        "CWE-762",
+        "memory corruption",
+        "delete[] mismatch",
+        "OpenHarmony"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-b30ed4fa",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/web/arkweb/NWeb",
+      "functionChain": [
+        "NWeb UAF"
+      ],
+      "fixDescription": "chromium_src master 的 nweb UAF 系列未回迁 6.0 分支，参考树仍可能含漏洞。",
+      "severity": "HIGH",
+      "codeSnippet": "chromium_src master 的 nweb UAF 系列",
+      "tags": [
+        "CWE-416",
+        "UAF",
+        "NWeb",
+        "chromium_src"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-38a8461e",
+      "cveId": null,
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "arkcompiler/ets_runtime/process.cpp",
+      "functionChain": [
+        "process.cpp:150",
+        "TOCTOU check"
+      ],
+      "fixDescription": "已解 track 5e369da2 的 process TOCTOU 修复（182b8c9a）：对进程状态/文件的检查与使用之间增加同步或原子操作，避免检查后使用期间被篡改。",
+      "severity": "HIGH",
+      "codeSnippet": "process.cpp:150 = TOCTOU fix (182b8c9a)",
+      "tags": [
+        "TOCTOU",
+        "CWE-367",
+        "process"
+      ],
+      "confidence": 0.6,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-9c30b71c",
+      "vulnerabilityType": "整数溢出",
+      "modulePath": "base/security/certificate_manager",
+      "functionChain": [
+        "ReadBytes",
+        "WriteBytesValue"
+      ],
+      "fixDescription": "PR#15001: `WriteBytesValue` only checks `byteLength > SixBytes` and lacks the lower-bound check `byteLength < OneByte` that `ReadBytes` has. If `byteLength` is 0, the resulting `highBytes` underflows to a huge value, later causing recursive out-of-bounds access. The fix should add the missing lower-bound validation.",
+      "severity": "MEDIUM",
+      "codeSnippet": "WriteBytesValue: if (byteLength > SixBytes) ... // missing byteLength < OneByte check",
+      "tags": [
+        "Integer Underflow",
+        "OOB",
+        "CWE-191",
+        "CWE-787"
+      ],
+      "confidence": 0.58,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-c543b914",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/builtins/builtins_ark_tools.cpp",
+      "functionChain": [],
+      "fixDescription": "修复 builtins_ark_tools.cpp 中参数越界读，删除第 1861 行的缺陷代码。",
+      "severity": "HIGH",
+      "codeSnippet": "builtins_ark_tools.cpp:1861 删除行",
+      "tags": [
+        "CWE-125",
+        "OOB Read",
+        "builtins",
+        "ark_tools"
+      ],
+      "confidence": 0.55,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-19eb0eb0",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/base",
+      "functionChain": [
+        "strLen << 3",
+        "EnsureCapacity(0)"
+      ],
+      "fixDescription": "修复空字符串场景下 strLen<<3 为 0 时调用 EnsureCapacity(0) 导致缓冲区溢出的问题。",
+      "severity": "HIGH",
+      "codeSnippet": "strLen << 3",
+      "tags": [
+        "CWE-787",
+        "buffer overflow",
+        "empty string",
+        "EnsureCapacity"
+      ],
+      "confidence": 0.55,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-b100ef49",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "base/security/certificate_manager",
+      "functionChain": [
+        "keyUri",
+        "NUL termination"
+      ],
+      "fixDescription": "Fix commit e3cc1f7 deletes the unsafe `keyUri->data[keyUri->size - 1] = '\\0'` statement; if `keyUri->size` is 0, the subtraction underflows and causes an out-of-bounds write. The fix removes this write and performs a proper bounds check.",
+      "severity": "HIGH",
+      "codeSnippet": "keyUri->data[keyUri->size - 1] = '\\0';",
+      "tags": [
+        "OOB Write",
+        "CertificateManager",
+        "off-by-one",
+        "CWE-787"
+      ],
+      "confidence": 0.55,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-a69878f3",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/base",
+      "functionChain": [
+        "UpdateDetector",
+        "ArraySpeciesCreate",
+        "OptimizePrototypeForIC"
+      ],
+      "fixDescription": "修复 ecmascript/base 中多个类型混淆问题，具体 CWE 分类待确认。",
+      "severity": "MEDIUM",
+      "codeSnippet": "UpdateDetector/ArraySpeciesCreate/OptimizePrototypeForIC 类型混淆；尝试 CWE-843/704/196/119 均未命中",
+      "tags": [
+        "类型混淆",
+        "CWE-843",
+        "需要复审"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-fca26f8e",
+      "cveId": "CVE-2026-24792",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "third_party/chromium_cef/chromium_src",
+      "functionChain": [],
+      "fixDescription": "CVE-2026-24792 为条件竞争漏洞，影响 web_webview 相关组件，需在 webview 壳层进一步验证标注位置。",
+      "severity": "HIGH",
+      "codeSnippet": "CVE-2026-24792（条件竞争 8.1），漏洞在 third_party(chromium_cef/chromium_src)",
+      "tags": [
+        "CWE-362",
+        "条件竞争",
+        "webview"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-1be60537",
+      "cveId": "CVE-2026-27648",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "third_party/chromium_cef/chromium_src",
+      "functionChain": [],
+      "fixDescription": "CVE-2026-27648 为越界写漏洞，影响 web_webview 相关组件，需在 webview 壳层进一步验证标注位置。",
+      "severity": "HIGH",
+      "codeSnippet": "CVE-2026-27648（越界写 8.8），漏洞在 third_party(chromium_cef/chromium_src)",
+      "tags": [
+        "CWE-787",
+        "越界写",
+        "webview"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-80ba03db",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "unknown",
+      "functionChain": [],
+      "fixDescription": "修复 MTP 缓冲区溢出问题，补充长度/边界检查。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-787",
+        "MTP",
+        "buffer overflow"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-3ddc8545",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/communication/netmanager_base",
+      "functionChain": [
+        "WriteString"
+      ],
+      "fixDescription": "WriteString track near line 602 appears to write sensitive information to logs, suspected CWE-532. CWE-532 submission was rejected, so this needs further review.",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-532",
+        "sensitive log",
+        "netmanager",
+        "unconfirmed"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-89dc613d",
+      "cveId": null,
+      "vulnerabilityType": "权限绕过",
+      "modulePath": "base/security/certificate_manager",
+      "functionChain": [
+        "CheckPermission",
+        "ACCESS_TRACE_ROUTE_INFO"
+      ],
+      "fixDescription": "Fix permission string from ACCESS_TRACE_ROUTE_INFO to ACCESS_NET_TRACE_INFO, addressing a permission bypass issue.",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "permission bypass",
+        "certificate_manager",
+        "unconfirmed"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-aadc2dbc",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "arkcompiler/ets_runtime/ecmascript/compiler",
+      "functionChain": [
+        "String::indexOf"
+      ],
+      "fixDescription": "Fix an integer overflow in String indexOf (CWE-190), associated with commit bcb41a492.",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-190",
+        "integer overflow",
+        "ets_runtime",
+        "compiler"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-98393724",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/communication/dhcp",
+      "functionChain": [
+        "dhcp_controller"
+      ],
+      "fixDescription": "Fix a NULL pointer dereference in dhcp_controller, associated with commit 522e847a5.",
+      "severity": "MEDIUM",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-476",
+        "null pointer",
+        "dhcp"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-333af473",
+      "cveId": null,
+      "vulnerabilityType": "UAF",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "object_fast_operator-inl.h",
+        "objHandle"
+      ],
+      "fixDescription": "Fix 'use objHandle after migration' Use-After-Free issue in object_fast_operator-inl.h, associated with commit 7f0270468.",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-416",
+        "UAF",
+        "ets_runtime"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-1b6edce0",
+      "cveId": "",
+      "vulnerabilityType": "整数溢出",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [
+        "BitVector::SetBit",
+        "(length-1)/64"
+      ],
+      "fixDescription": "Fix integer underflow when length is 0, causing ((length-1)/64) to become huge and leading to OOB allocation/access.",
+      "severity": "MEDIUM",
+      "codeSnippet": "for (int i = 0; i < (length - 1) / 64; i++) { ... } // length=0 underflows",
+      "tags": [
+        "integer underflow",
+        "OOB"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-ddadeb1b",
+      "vulnerabilityType": "UAF",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext",
+      "functionChain": [
+        "SharedCC",
+        "Evacuator"
+      ],
+      "fixDescription": "Commit 34b76ea2a 'fix/sharedcc-evacuator-uaf' fixes a use-after-free in the SharedCC evacuator. The fix likely adjusts object lifetime management during evacuation so freed objects are not accessed.",
+      "severity": "HIGH",
+      "codeSnippet": "fix/sharedcc-evacuator-uaf",
+      "tags": [
+        "UAF",
+        "CWE-416",
+        "chromium_cef",
+        "SharedCC"
+      ],
+      "confidence": 0.5,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-41a663fe",
+      "cveId": "",
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/communication/netmanager_base/services/netmanagernative/src/netsys/net_manager_native.cpp",
+      "functionChain": [
+        "EnableDistributedServerNet",
+        "ForkExec",
+        "IsValidIPV4"
+      ],
+      "fixDescription": "Validate IP/network addresses before passing them to ForkExec or similar command execution paths, preventing injection of OS commands through attacker-controlled parameters.",
+      "severity": "MEDIUM",
+      "codeSnippet": "ForkExec 命令执行 + IsValidIPV4 校验",
+      "tags": [
+        "OpenHarmony",
+        "netmanager",
+        "command injection",
+        "CWE-78"
+      ],
+      "confidence": 0.45,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-62717e87",
+      "cveId": "",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "arkcompiler/ets_runtime",
+      "functionChain": [],
+      "fixDescription": "修复 gcbitset 的竞态条件，增加并发保护。",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "CWE-362",
+        "race condition",
+        "gcbitset",
+        "ets_runtime"
+      ],
+      "confidence": 0.4,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-b8ec4717",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/web/web_webview",
+      "functionChain": [
+        "napi_ref"
+      ],
+      "fixDescription": "142 track 探测中曾尝试 napi_ref 泄漏修复，未确认是否 Accepted。",
+      "severity": "MEDIUM",
+      "codeSnippet": "napi_ref 泄漏",
+      "tags": [
+        "CWE-772",
+        "resource leak",
+        "napi_ref",
+        "OpenHarmony"
+      ],
+      "confidence": 0.4,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-cc2df042",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/security/certificate_manager",
+      "functionChain": [
+        "keystore cryptographic operation"
+      ],
+      "fixDescription": "142 track 探测中曾尝试 keystore 静态 IV 修复，未确认是否 Accepted。",
+      "severity": "MEDIUM",
+      "codeSnippet": "keystore 静态IV",
+      "tags": [
+        "CWE-329",
+        "static IV",
+        "keystore",
+        "OpenHarmony"
+      ],
+      "confidence": 0.4,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-09bc2b0e",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/netmanager_base/services/netmanagernative/src/netsys/net_manager_native.cpp",
+      "functionChain": [
+        "EnableDistributedServerNet",
+        "StrToUint",
+        "strtoul"
+      ],
+      "fixDescription": "Replace unsafe string-to-integer conversion (stoul) with a bounds-checked StrToUint helper and add boundary checks before array/memory write operations to prevent out-of-bounds writes.",
+      "severity": "HIGH",
+      "codeSnippet": "change stoul to StrToUint / stoul 异常和越界",
+      "tags": [
+        "OpenHarmony",
+        "netmanager",
+        "out-of-bounds write",
+        "CWE-787"
+      ],
+      "confidence": 0.35,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-00fbce8c",
+      "cveId": null,
+      "vulnerabilityType": "其他",
+      "modulePath": "foundation/communication/netmanager_base/services/netmanagernative/src/netsys/net_manager_native.cpp",
+      "functionChain": [
+        "EnableDistributedServerNet",
+        "IsValidIPV4",
+        "ForkExec"
+      ],
+      "fixDescription": "对分布式网络服务接口的输入参数增加严格的 IP 格式校验（IsValidIPV4），并在 ForkExec 执行命令前对传入参数进行白名单校验或转义，避免拼接恶意命令形成命令注入。",
+      "severity": "MEDIUM",
+      "codeSnippet": "// 日志线索：net_manager_native.cpp:128 附近 EnableDistributedServerNet / ForkExec / IsValidIPV4；CWE-78",
+      "tags": [
+        "CWE-78",
+        "command injection",
+        "netmanager_base",
+        "Nday CTF"
+      ],
+      "confidence": 0.3,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-8225d5ea",
+      "cveId": "CVE-2026-24792",
+      "vulnerabilityType": "条件竞争",
+      "modulePath": "foundation/web/arkweb/ohos_nweb",
+      "functionChain": [],
+      "fixDescription": "Fix a race condition in web_webview that could allow arbitrary code execution by remote attackers (Severity 8.1). The fix likely adds proper locking or state synchronization.",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "web",
+        "race condition",
+        "RCE"
+      ],
+      "confidence": 0.3,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-46cf6a5b",
+      "cveId": "CVE-2026-27648",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/arkweb/ohos_nweb",
+      "functionChain": [],
+      "fixDescription": "Fix an out-of-bounds write in web_webview that could lead to arbitrary code execution by remote attackers. The fix likely adds boundary checks.",
+      "severity": "HIGH",
+      "codeSnippet": "",
+      "tags": [
+        "web",
+        "OOB write"
+      ],
+      "confidence": 0.3,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-d9af7b16",
+      "cveId": "",
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/web/arkweb/ohos_cef_ext",
+      "functionChain": [
+        "while (curIndex < dataListSize ...)"
+      ],
+      "fixDescription": "Fix an out-of-bounds write in flowbuffer processing where a while loop writes into dataList without proper boundary checks. The fix adds a loop exit condition or bounds validation.",
+      "severity": "HIGH",
+      "codeSnippet": "while (curIndex < dataListSize ...) dataList[curIndex] = ...",
+      "tags": [
+        "flowbuffer",
+        "OOB write"
+      ],
+      "confidence": 0.3,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-e89f19c4",
+      "cveId": null,
+      "vulnerabilityType": "缓冲区溢出",
+      "modulePath": "foundation/communication/netmanager_base",
+      "functionChain": [
+        "std::stoul",
+        "StrToUint"
+      ],
+      "fixDescription": "将不安全的 stoul 字符串转换替换为带边界检查的 StrToUint（如提交 9f7ff68ae），避免因异常或未校验的整型转换导致越界写。",
+      "severity": "HIGH",
+      "codeSnippet": "// 日志线索：提交 9f7ff68ae change stoul to StrToUint；修复 stoul 异常与越界",
+      "tags": [
+        "CWE-787",
+        "out-of-bounds write",
+        "integer conversion",
+        "netmanager_base",
+        "Nday CTF"
+      ],
+      "confidence": 0.25,
+      "needsReview": true
+    },
+    {
+      "id": "ohos-ae297c3a",
+      "cveId": "",
+      "vulnerabilityType": "权限绕过",
+      "modulePath": "foundation/communication/netmanager_base/services/netmanagernative/src/netsys/net_manager_native.cpp",
+      "functionChain": [],
+      "fixDescription": "Add or strengthen permission checks in netmanager security fixes to prevent unauthorized access to sensitive network management functionality.",
+      "severity": "HIGH",
+      "codeSnippet": "e256a2e80 修复netmanager安全漏洞 / 权限检查类修复",
+      "tags": [
+        "OpenHarmony",
+        "netmanager",
+        "permission bypass",
+        "access control"
+      ],
+      "confidence": 0.2,
+      "needsReview": true
     }
   ]
 }

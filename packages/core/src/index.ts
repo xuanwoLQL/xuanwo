@@ -9,6 +9,7 @@ export * from "./llm/client.js";
 export * from "./tools/ToolExecutor.js";
 export * from "./tools/builtin-tools.js";
 export * from "./knowledge/knowledge.js";
+export * from "./knowledge/retriever.js";
 export * from "./knowledge/summary.js";
 export * from "./session/session.js";
 export * from "./security/config.js";

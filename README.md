@@ -75,6 +75,36 @@ OpenHarmony AI 漏洞挖掘命令行工具（基于 OpenCode 架构定制）
 - `xuanwo agent napi-auditor "审计 <file>"` → 子智能体直跑 ReAct，正确识别未初始化参数访问、纠正缓冲区溢出误报
 - `xuanwo agent openharmony-hunter "全面审计 <file>"` → 主控调度 napi-auditor 子智能体，汇总结构化结论 + suspiciousPoints
 
+## 第四阶段：知识提取 + 渐进式 RAG（已完成）
+
+### 全量知识提取
+- `scripts/extract-knowledge.js` 处理全量 35 个 SESSION（原始日志 11.7MB / 18 万行）
+- **结果**：提取成功率 100%（35/35），消耗约 39 万 token，生成 **214 条去重模式**
+- 成本控制：并发 5 + 每 SESSION 按关键词权重截取高价值行（CWE/Accepted/commit/漏洞），tiktoken 计数
+- 增量合并：按稳定 id（modulePath+type+函数链 hash）去重，保留高置信度版本
+- 质量标注：平均置信度 0.74，104 条 `needsReview: true` 需人工复核
+
+### 知识库内容分布
+| 漏洞类型 | 数量 | 模块 | 数量 |
+|:---|:---|:---|:---|
+| 缓冲区溢出 | 104 | arkcompiler/ets_runtime | 75 |
+| 其他 | 37 | foundation/web | 28 |
+| 条件竞争 | 34 | foundation/communication | 26 |
+| UAF | 27 | foundation/filemanagement | 19 |
+| 权限绕过 | 7 | drivers/peripheral | 18 |
+| 整数溢出 | 5 | foundation/multimedia | 17 |
+
+### 渐进式 RAG
+- **V1 规则分组**：modulePath 前缀匹配，按目标模块加载对应组（零依赖）
+- **V2 全文索引**：minisearch 索引 vulnerabilityType/functionChain/tags/fixDescription，模糊+前缀检索
+- **V3 向量检索**：`searchVector()` 预留接口（后续接入 Chroma/LanceDB）
+- CLI：`xuanwo knowledge --stats|--list|--search <q> --module <path>`
+
+### 模块路径规范化
+- `scripts/normalize-knowledge.js`：仓库名→标准前缀（web_webview→foundation/web/web_webview）
+- 文件归属映射（process.cpp→arkcompiler/ets_runtime）、ecmascript→arkcompiler 等
+- `scripts/rebuild-knowledge.js`：规范化后重建稳定 id + 去重
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

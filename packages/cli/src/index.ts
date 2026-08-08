@@ -1,6 +1,7 @@
 import { Command } from "commander";
 import { ConfigManager, runSetup, DISCLAIMER } from "@xuanwo/core";
 import { runAgentCommand } from "./commands/agent.js";
+import { runKnowledgeCommand } from "./commands/knowledge.js";
 
 const program = new Command();
 
@@ -67,13 +68,15 @@ program
   .description("知识库管理")
   .option("--update --log <path>", "从日志重新解析并合并模式")
   .option("--list", "列出已加载模式")
-  .action((opts) => {
-    if (opts.list) {
-      console.log("知识库列表功能将在阶段四提供");
-    }
+  .option("--search <query>", "全文检索模式")
+  .option("--module <path>", "按模块过滤（配合 --search）")
+  .option("--stats", "知识库统计")
+  .action(async (opts) => {
     if (opts.log) {
-      console.log(`知识库更新功能将在阶段四提供 (log=${opts.log})`);
+      console.log(`知识库更新: 请运行 scripts/extract-knowledge.js (log=${opts.log})`);
+      return;
     }
+    await runKnowledgeCommand(opts);
   });
 
 program

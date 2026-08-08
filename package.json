@@ -17,6 +17,7 @@
   "dependencies": {
     "commander": "^12.0.0",
     "keytar": "^7.9.0",
+    "minisearch": "^7.0.0",
     "openai": "^7.4.0",
     "tiktoken": "^1.0.0"
   },

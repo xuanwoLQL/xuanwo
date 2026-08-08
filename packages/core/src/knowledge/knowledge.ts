@@ -4,6 +4,7 @@
  */
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { KnowledgeRetriever } from "./retriever.js";
 
 export interface NdayPattern {
   id: string;
@@ -67,5 +68,10 @@ export class KnowledgeBase {
   /** 高置信度模式（needsReview=false） */
   confirmed(): NdayPattern[] {
     return this.patterns.filter((p) => !p.needsReview);
+  }
+
+  /** 渐进式 RAG 检索器（V1 规则分组 + V2 全文索引） */
+  retriever(): KnowledgeRetriever {
+    return new KnowledgeRetriever(this.patterns);
   }
 }
