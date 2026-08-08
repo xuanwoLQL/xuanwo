@@ -351,6 +351,13 @@ xuanwo
 - 认证：`HARMONY_CTF_USERNAME` / `HARMONY_CTF_PASSWORD` / `HARMONY_CTF_BASE_URL`
 - 支持 L1/L2/L3 三级提交 + trackId 管理
 
+### ⚠️ 防爆破规则（自动遵守）
+- wrongAnswerLimit 每题不同（5~60），答错超限 → **5 分钟冷却**
+- **禁止爆破猜想**：连续行号枚举 → **冻结当日提交资格**；严重 → 取消资格
+- **提交前必须** `challenge` 查状态（`checkSubmitSafety`：冷却/封禁/锁定）
+- `ctf submit` 和 `hunt --submit` 都内置安全检查，禁止连续重试
+- hunt 只提交"有 diff 依据 + 能解释漏洞操作"的最高置信度候选，单次尝试
+
 ### 竞赛方法论（从解题日志提炼）
 1. 拉 master → diff 6.0..master 找安全修复（最有效）
 2. L1 提交 `file:line`（源码根完整相对路径）

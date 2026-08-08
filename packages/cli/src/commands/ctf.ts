@@ -2,7 +2,7 @@
  * 竞赛平台命令
  * xuanwo ctf login|whoami|challenge|status|submit
  */
-import { login, whoami, getChallenge, submit, status, contestConfig } from "@xuanwo/core";
+import { login, whoami, getChallenge, checkSubmitSafety, submit, status, contestConfig } from "@xuanwo/core";
 
 export async function runCtfCommand(args: string[]) {
   const action = args[0];
@@ -54,11 +54,23 @@ export async function runCtfCommand(args: string[]) {
         console.error("用法: xuanwo ctf submit <gameId> <challengeId> <level> <answer> [trackId]");
         return;
       }
+      // 提交前安全检查（防爆破规则：先查冷却/封禁/锁定）
+      const c = await getChallenge(gameId, challengeId);
+      if (c) {
+        const safety = checkSubmitSafety(c);
+        if (!safety.canSubmit) {
+          console.log(`❌ 禁止提交: ${safety.reason}`);
+          console.log("   提示: 遵守防爆破规则，不要盲目重试。");
+          return;
+        }
+        console.log(`✅ 状态安全（attempts=${c.attempts ?? 0}, wrongAnswerLimit 未超限）`);
+      }
       const r = await submit(gameId, challengeId, level, answer, trackId);
       if (r.ok) {
         console.log(`✅ 提交成功! activeTrackId=${r.activeTrackId ?? "?"}${r.message ? ` (${r.message})` : ""}`);
       } else {
         console.log(`❌ 提交失败: ${r.raw ?? ""}`);
+        console.log("   提示: 遵守防爆破规则，请先分析错误原因（冷却/封禁/格式），不要连续重试。");
       }
       return;
     }

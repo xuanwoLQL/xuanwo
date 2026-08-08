@@ -128,8 +128,74 @@ export async function runHuntCommand(rawRepo: string, opts: { module?: string; s
     console.log(`   ${r.description.slice(0, 200)}`);
   });
 
-  // 4. 可选提交
+  // 4. 安全智能提交（防爆破规则：只提交有 diff 依据的最高置信度候选，且单次）
   if (opts.submit) {
-    console.log("\n⚠️  自动提交需要 HARMONY_CTF 凭据，本次跳过（用 xuanwo ctf submit 手动提交）。");
+    await safeSubmit(runtime, results, wslRepo, module);
+  }
+}
+
+/**
+ * 安全提交（遵守防爆破规则）
+ * 1. 只提交能解释漏洞语义的候选（有 file+line+type 依据）
+ * 2. 提交前 challenge 查状态（冷却/封禁/锁定）
+ * 3. 只提交 1 次，不枚举行号
+ */
+async function safeSubmit(
+  runtime: AgentRuntime,
+  results: { commit: string; file: string; line: number | null; vulnType: string; cwe: string; description: string }[],
+  wslRepo: string,
+  module: string
+): Promise<void> {
+  const { getChallenge, checkSubmitSafety, submit, contestConfig } = await import("@xuanwo/core");
+  const cfg = contestConfig();
+  if (!cfg.username || !cfg.password) {
+    console.log("\n⚠️  未设置 HARMONY_CTF_USERNAME/PASSWORD，跳过提交（先设置环境变量）。");
+    return;
+  }
+
+  // 选出有完整依据的候选（file + line + 非"其他"类型）
+  const strong = results.filter((r) => r.file && r.line && r.vulnType !== "其他");
+  if (strong.length === 0) {
+    console.log("\n⚠️  没有高置信度候选（需要 file+line+明确类型），不提交以避免爆破风险。");
+    return;
+  }
+  const best = strong[0];
+  const gameId = 2;
+  const challengeId = Number(process.env.HARMONY_CTF_CHALLENGE_ID || "0");
+
+  if (!challengeId) {
+    console.log("\n⚠️  需要 HARMONY_CTF_CHALLENGE_ID 指定题目编号才能提交。");
+    console.log(`   本次最佳候选: ${best.file}:${best.line} [${best.vulnType}] ${best.cwe}`);
+    console.log(`   L2: ${best.commit}`);
+    return;
+  }
+
+  // 提交前检查状态
+  console.log(`\n提交前检查题目 ${challengeId} 状态...`);
+  const c = await getChallenge(gameId, challengeId);
+  if (!c) {
+    console.log("❌ 无法获取题目状态，跳过提交。");
+    return;
+  }
+  const safety = checkSubmitSafety(c);
+  if (!safety.canSubmit) {
+    console.log(`❌ 禁止提交: ${safety.reason}`);
+    return;
+  }
+  console.log(`✅ 状态安全（attempts=${c.attempts ?? 0}）`);
+
+  // 单次提交 L1
+  const answer = `${best.file}:${best.line}`;
+  console.log(`\n提交 L1: ${answer}`);
+  const r = await submit(gameId, challengeId, 1, answer);
+  if (r.ok) {
+    console.log(`✅ Accepted! trackId=${r.activeTrackId ?? "?"}`);
+    if (best.cwe !== "CWE-OTHER") {
+      console.log(`   可继续提交 L2: ${best.commit}`);
+      console.log(`   可继续提交 L3: ${best.cwe}`);
+    }
+  } else {
+    console.log(`❌ 提交失败: ${r.raw ?? ""}`);
+    console.log("   遵守防爆破规则：不连续重试，请人工分析候选是否准确。");
   }
 }

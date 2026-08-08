@@ -51,6 +51,9 @@ export interface ChallengeInfo {
   allEnabledFlagsSolved?: boolean;
   flags?: unknown;
   content?: string;
+  repository?: string;
+  cooldown?: unknown;
+  tracks?: unknown;
 }
 
 interface ApiResponse {
@@ -142,6 +145,24 @@ export async function getChallenge(gameId: number, challengeId: number): Promise
   const r = await apiRequest("GET", `/api/game/${gameId}/challenges/${challengeId}`);
   if (!r.ok) return null;
   return r.data as ChallengeInfo;
+}
+
+/**
+ * 提交安全检查（防爆破规则）
+ * 提交前必须调用：检查冷却/封禁/锁定状态
+ * @returns {canSubmit, reason}
+ */
+export function checkSubmitSafety(c: ChallengeInfo): { canSubmit: boolean; reason: string } {
+  if (c.isLocked) {
+    return { canSubmit: false, reason: `题目已锁定${c.bannedLevel ? ` (L${c.bannedLevel} 被禁)` : ""}` };
+  }
+  if (c.bannedLevel !== null && c.bannedLevel !== undefined) {
+    return { canSubmit: false, reason: `Level ${c.bannedLevel} 已封禁（触发 banTriggerAnswer）` };
+  }
+  if (c.activeTrackId && c.bannedTrackId && c.activeTrackId === c.bannedTrackId) {
+    return { canSubmit: false, reason: "当前 track 已被封禁" };
+  }
+  return { canSubmit: true, reason: "可提交" };
 }
 
 export interface SubmitResult {
