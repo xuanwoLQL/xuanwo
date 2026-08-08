@@ -289,6 +289,13 @@ packages/resources/skills/
 - CLI：`xuanwo chain <file> [--module <m>]`，ASCII 可视化 + JSON 保存
 - 验证：8 节点 7 边攻击链，从 JS 入口 → 命令注入 + 缓冲区溢出双分支
 
+### ReAct 证据前置强化（借鉴 AutoYara locator_agent）
+- 不得在未读取代码前输出 final（证据前置）
+- suspiciousPoint 必须带 evidence：codeSnippet / callChain / triggerCondition / severity
+- 无代码证据的结论 confidence ≤ 0.5
+- 每次只调用一个工具，观察后再决策
+- CLI scan/analyze/report 展示调用链与触发条件
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

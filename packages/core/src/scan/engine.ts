@@ -261,6 +261,15 @@ export function renderReport(report: ScanReport): string {
       lines.push(`- 类型: ${p.type}`);
       lines.push(`- 置信度: ${p.confidence}`);
       lines.push(`- 描述: ${p.description}`);
+      if (p.evidence?.callChain?.length) {
+        lines.push(`- 调用链: ${p.evidence.callChain.join(" → ")}`);
+      }
+      if (p.evidence?.codeSnippet) {
+        lines.push(`- 代码片段:\n\`\`\`\n${p.evidence.codeSnippet.slice(0, 500)}\n\`\`\``);
+      }
+      if (p.evidence?.triggerCondition) {
+        lines.push(`- 触发条件: ${p.evidence.triggerCondition}`);
+      }
       lines.push(``);
     });
   }

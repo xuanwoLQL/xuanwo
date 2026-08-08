@@ -61,6 +61,12 @@ export async function runScanCommand(path: string, opts: { maxFiles?: string; co
   report.suspiciousPoints.forEach((p, i) => {
     console.log(`  ${i + 1}. [${p.type}] ${p.location} (conf=${p.confidence})`);
     console.log(`     ${p.description.slice(0, 150)}`);
+    if (p.evidence?.callChain?.length) {
+      console.log(`     调用链: ${p.evidence.callChain.join(" → ")}`);
+    }
+    if (p.evidence?.triggerCondition) {
+      console.log(`     触发: ${p.evidence.triggerCondition.slice(0, 100)}`);
+    }
   });
 
   if (opts.report || report.suspiciousPoints.length > 0) {
@@ -96,6 +102,12 @@ export async function runAnalyzeCommand(file: string) {
     context.suspiciousPoints.forEach((p, i) => {
       console.log(`  ${i + 1}. [${p.type}] ${p.location} (conf=${p.confidence})`);
       console.log(`     ${p.description}`);
+      if (p.evidence?.callChain?.length) {
+        console.log(`     调用链: ${p.evidence.callChain.join(" → ")}`);
+      }
+      if (p.evidence?.triggerCondition) {
+        console.log(`     触发: ${p.evidence.triggerCondition.slice(0, 120)}`);
+      }
     });
   } catch (e) {
     console.error(`\n❌ 分析失败: ${(e as Error).message}`);

@@ -40,15 +40,34 @@ const REACT_SCHEMA = `你是一个基于 ReAct（Reason-Act-Observe）循环工�
 - 若需要调用工具，action.tool 为工具名，input 为参数对象
 每次只输出一个 JSON 对象，不要包含其他文字。
 
+【重要规则】（借鉴 AutoYara 证据前置原则）
+1. 不得在未读取目标文件/代码前就输出 final。必须先调用 read/grep 等工具获取真实代码证据。
+2. final 中每个 suspiciousPoint 必须带证据：location(file:line)、description、confidence，
+   并尽量包含 codeSnippet（关键代码片段）与 callChain（调用链）。
+3. 没有代码证据支撑的结论属于猜测，confidence 不得超过 0.5。
+4. 每次只调用一个工具，观察结果后再决定下一步。
+
 final 对象格式：
 {
   "conclusion": "结论文本（含漏洞分析、file:line、修复建议）",
   "dispatch": [{"agent":"子智能体id","task":"子任务描述"}],
   "suspiciousPoints": [
-    {"location":"文件:行号","type":"UAF|缓冲区溢出|权限绕过|条件竞争|整数溢出|其他","description":"描述","confidence":0-1}
+    {
+      "location":"文件:行号",
+      "type":"UAF|缓冲区溢出|权限绕过|条件竞争|整数溢出|其他",
+      "description":"描述（含证据与触发条件）",
+      "confidence":0-1,
+      "evidence": {
+        "codeSnippet":"关键代码片段",
+        "callChain":["入口函数","处理函数","危险操作"],
+        "triggerCondition":"触发条件",
+        "severity":"critical|high|medium|low"
+      }
+    }
   ]
 }
-- dispatch 可选：主控智能体需要派发子任务时填写，子智能体填 []`;
+- dispatch 可选：主控智能体需要派发子任务时填写，子智能体填 []
+- 只有拿到代码证据的可疑点才给高置信度（>0.5）`;
 
 /**
  * 宽松 JSON 提取：从模型输出中提取第一个完整 JSON 对象。
@@ -201,7 +220,18 @@ ${toolDesc || "- 无工具（仅推理）"}
       if (step.action.tool === "final") {
         const input = step.action.input as {
           conclusion?: unknown;
-          suspiciousPoints?: { location: string; type: string; description: string; confidence: number }[];
+          suspiciousPoints?: {
+            location: string;
+            type: string;
+            description: string;
+            confidence: number;
+            evidence?: {
+              codeSnippet?: string;
+              callChain?: string[];
+              triggerCondition?: string;
+              severity?: string;
+            };
+          }[];
         };
         const conclusion =
           typeof input === "string"
@@ -210,12 +240,23 @@ ${toolDesc || "- 无工具（仅推理）"}
               ? input.conclusion
               : JSON.stringify(input);
         const points = Array.isArray(input?.suspiciousPoints)
-          ? input.suspiciousPoints.map((p) => ({
-              location: String(p.location ?? ""),
-              type: String(p.type ?? "其他"),
-              description: String(p.description ?? ""),
-              confidence: typeof p.confidence === "number" ? p.confidence : 0.5,
-            }))
+          ? input.suspiciousPoints.map((p): SuspiciousPoint => {
+              const ev = p.evidence;
+              return {
+                location: String(p.location ?? ""),
+                type: String(p.type ?? "其他"),
+                description: String(p.description ?? ""),
+                confidence: typeof p.confidence === "number" ? p.confidence : 0.5,
+                evidence: ev
+                  ? {
+                      codeSnippet: typeof ev.codeSnippet === "string" ? ev.codeSnippet : undefined,
+                      callChain: Array.isArray(ev.callChain) ? ev.callChain.map(String) : undefined,
+                      triggerCondition: typeof ev.triggerCondition === "string" ? ev.triggerCondition : undefined,
+                      severity: (ev.severity as "critical" | "high" | "medium" | "low" | "informational" | undefined) ?? undefined,
+                    }
+                  : undefined,
+              };
+            })
           : [];
         workingContext.suspiciousPoints = dedupePoints([
           ...workingContext.suspiciousPoints,
