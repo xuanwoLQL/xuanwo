@@ -2,6 +2,8 @@
 
 OpenHarmony AI 漏洞挖掘命令行工具（基于 OpenCode 架构定制）
 
+> **想体验？** 请看 [docs/experience-guide.md](docs/experience-guide.md)（分发指南 · 三步上手 · 常用命令 · 常见问题）
+
 ## 第零阶段：原型验证结果
 
 | 验证项 | 方法 | 结果 | 通过标准 | 结论 |
