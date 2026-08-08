@@ -20,6 +20,8 @@ import { SessionManager } from "./session/session.js";
 import { loadSkillsFromDir, type SkillConfig } from "./skills/loader.js";
 import { SkillRegistry } from "./skills/registry.js";
 import { SkillExecutor } from "./skills/executor.js";
+import { McpManager } from "./mcp/client.js";
+import { loadMcpConfig } from "./mcp/config.js";
 import type { AuditContext } from "./agent/audit-context.js";
 
 /**
@@ -59,6 +61,7 @@ export class AgentRuntime {
   readonly config: ConfigManager;
   readonly skills: SkillRegistry;
   readonly skillExecutor: SkillExecutor;
+  readonly mcpManager: McpManager | null;
 
   private constructor(
     llm: LlmClient,
@@ -67,13 +70,22 @@ export class AgentRuntime {
     config: ConfigManager,
     knowledge: KnowledgeBase,
     skills: SkillRegistry,
-    skillExecutor: SkillExecutor
+    skillExecutor: SkillExecutor,
+    mcpManager: McpManager | null
   ) {
     this.config = config;
     this.knowledge = knowledge;
     this.skills = skills;
     this.skillExecutor = skillExecutor;
-    this.orchestrator = new AgentOrchestrator(llm, agents, createBuiltinTools(toolExecutor, skills));
+    this.mcpManager = mcpManager;
+    const builtinTools = createBuiltinTools(toolExecutor, skills);
+    this.orchestrator = new AgentOrchestrator(llm, agents, builtinTools);
+    // 注册 MCP 工具
+    if (mcpManager) {
+      for (const t of mcpManager.allTools()) {
+        this.orchestrator.addTool(t);
+      }
+    }
   }
 
   static async create(options: Partial<RuntimeResources> = {}): Promise<AgentRuntime> {
@@ -126,7 +138,19 @@ export class AgentRuntime {
     // 加载智能体
     const agents = [...loadAgentsFromDir(agentsDir, templateCtx).values()];
 
-    return new AgentRuntime(llm, agents, toolExecutor, config, knowledge, skills, skillExecutor);
+    // 连接 MCP servers（可选，失败不阻塞）
+    let mcpManager: McpManager | null = null;
+    const mcpServers = loadMcpConfig();
+    if (mcpServers.length > 0) {
+      mcpManager = new McpManager(mcpServers);
+      try {
+        await mcpManager.connectAll();
+      } catch {
+        /* 忽略单个 MCP 连接失败 */
+      }
+    }
+
+    return new AgentRuntime(llm, agents, toolExecutor, config, knowledge, skills, skillExecutor, mcpManager);
   }
 
   runTask(

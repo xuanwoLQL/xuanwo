@@ -15,6 +15,7 @@
     "prototype:sea": "node scripts/prototype-sea.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
     "commander": "^12.0.0",
     "keytar": "^7.9.0",
     "minisearch": "^7.0.0",

@@ -181,6 +181,25 @@ packages/resources/skills/
 - `skill validate` → 白名单校验 PASS
 - 智能体审计时先 `load_skill napi-audit` 加载指南 → 应用指南识别 argc 未校验等问题
 
+## 第八阶段：MCP Client（已完成）
+
+### MCP 集成
+- 官方 SDK `@modelcontextprotocol/sdk`（v1.30）
+- `McpClient`：连接本地 stdio server，工具发现 + 调用
+- `McpManager`：多 server 连接池，工具收集
+- MCP 工具自动注册为 Agent 工具（前缀 `mcp_`），智能体可调用
+- 配置：`~/.xuanwo/mcp.json`（servers: name/command/args）
+- CLI：`xuanwo mcp list|add|test|use`
+
+### 验证
+- `scripts/test-mcp-server.js`：测试 server（file_info/file_head 两个工具，Zod schema）
+- `mcp test` → 连接 OK，2 工具
+- 智能体调用 `mcp_file_head` 读取文件 → 正确返回内容
+
+### 关键修复记录
+- MCP SDK 1.30 的 `inputSchema` 必须用 **Zod schema**（普通 JSON object 抛错）
+- MCP server 的 stdio 与 console.log 冲突 → server 端不打印到 stdout
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

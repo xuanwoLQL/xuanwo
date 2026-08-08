@@ -15,6 +15,8 @@ export * from "./scan/engine.js";
 export * from "./skills/loader.js";
 export * from "./skills/registry.js";
 export * from "./skills/executor.js";
+export * from "./mcp/client.js";
+export * from "./mcp/config.js";
 export * from "./session/session.js";
 export * from "./security/config.js";
 export * from "./security/credentials.js";

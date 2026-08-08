@@ -5,6 +5,7 @@ import { runKnowledgeCommand } from "./commands/knowledge.js";
 import { runSessionCommand, runResumeCommand } from "./commands/session.js";
 import { runScanCommand, runAnalyzeCommand, runReportCommand } from "./commands/scan.js";
 import { runSkillCommand } from "./commands/skill.js";
+import { runMcpCommand } from "./commands/mcp.js";
 import { runTui } from "./ui/index.js";
 
 const program = new Command();
@@ -148,6 +149,13 @@ program
   .description("技能管理: list | validate | <skill-id>")
   .action((args) => {
     runSkillCommand(args);
+  });
+
+program
+  .command("mcp <args...>")
+  .description("MCP 管理: list | add <name> <cmd> | test | use")
+  .action((args) => {
+    runMcpCommand(args);
   });
 
 program.parse();

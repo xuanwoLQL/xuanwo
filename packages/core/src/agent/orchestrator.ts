@@ -44,6 +44,15 @@ export class AgentOrchestrator {
     }));
   }
 
+  /** 动态注册工具（如 MCP 工具） */
+  addTool(tool: AgentTool): void {
+    this.tools.set(tool.definition.name, tool);
+  }
+
+  listTools(): string[] {
+    return [...this.tools.keys()];
+  }
+
   hasAgent(id: string): boolean {
     return this.agents.has(id);
   }
