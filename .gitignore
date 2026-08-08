@@ -2,6 +2,8 @@ node_modules/
 scripts/sea-test/node_modules/
 dist/
 *.exe
+*.bun-build
+*.bun
 scripts/sea-test/xuanwo-sea-final.exe
 scripts/sea-test/xuanwo-sea.exe
 scripts/sea-test/node-copy.exe

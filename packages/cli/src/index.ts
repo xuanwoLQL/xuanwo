@@ -134,14 +134,20 @@ program
 
 program
   .command("tui")
-  .description("启动交互式 TUI（/scan /analyze /nday /knowledge 等）")
-  .action(async () => {
+  .description("启动交互式 TUI（Ink 对话界面 /scan /analyze /knowledge 等）")
+  .option("--legacy", "使用轻量 TUI（兼容管道/无 TTY 环境）")
+  .action(async (opts) => {
     const cfg = new ConfigManager();
     if (!cfg.requireAccepted()) {
       console.log("❌ 尚未接受免责声明。请先运行: xuanwo setup");
       process.exit(1);
     }
-    await runTui();
+    if ((opts.legacy || !process.stdin.isTTY) && !process.env.XUANWO_INK_FORCE) {
+      await runTui();
+    } else {
+      const { runInkTui } = await import("./ui/ink-index.js");
+      await runInkTui();
+    }
   });
 
 program

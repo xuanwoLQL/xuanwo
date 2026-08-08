@@ -16,7 +16,10 @@ export interface ResourcePaths {
 }
 
 function exeDir(): string {
-  // SEA 下 __dirname 为 exe 所在目录
+  // Bun compile / Node SEA：execPath 指向可执行文件
+  if (process.execPath) {
+    return resolve(dirname(process.execPath));
+  }
   if (typeof __dirname !== "undefined") return resolve(__dirname);
   try {
     return dirname(fileURLToPath(import.meta.url));

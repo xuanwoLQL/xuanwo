@@ -8,11 +8,11 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "esbuild packages/cli/src/index.ts --bundle --platform=node --format=cjs --outfile=dist/xuanwo.cjs --external:keytar --alias:@xuanwo/core=./packages/core/src/index.ts --tsconfig=tsconfig.json",
+    "build": "node scripts/build.js",
     "typecheck": "tsc --noEmit",
     "dist": "node scripts/build.js",
-    "sea": "node scripts/build-sea.js",
-    "package": "node scripts/build.js && node scripts/build-sea.js",
+    "sea": "node scripts/build.js",
+    "package": "node scripts/build.js",
     "icon": "node scripts/gen-icon.js",
     "prototype:extract": "node scripts/extract-knowledge.js",
     "prototype:tool-executor": "node scripts/prototype-tool-executor.js",
@@ -21,14 +21,17 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
     "commander": "^12.0.0",
+    "ink": "^7.1.1",
     "keytar": "^7.9.0",
     "minisearch": "^7.0.0",
     "openai": "^7.4.0",
     "rcedit": "^5.0.2",
+    "react": "^19.2.8",
     "tiktoken": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@types/react": "^19.2.18",
     "esbuild": "^0.24.0",
     "typescript": "^5.6.0"
   }

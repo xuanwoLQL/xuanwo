@@ -219,6 +219,27 @@ packages/resources/skills/
 - exe 内调用真实 LLM（deepseek-v4-flash）成功
 - keytar（Windows Vault）与 MCP server 连接在 SEA 中均可用
 
+## OpenCode 风格 TUI 增强（Ink + Bun）
+
+### 技术决策：用 Bun 打包解决 Ink + 单文件 exe 矛盾
+- **Node SEA + Ink** ❌ 不可行：CJS 被 yoga-layout 的 top-level await 堵死；ESM 入口在 SEA 中 loader 切换失败
+- **Bun compile + Ink** ✅ 可行：`bun build --compile` 生成单文件 exe（118MB，含 React/ink/yoga），知识库/技能/智能体/keytar 全部正常
+- 打包命令：`npm run package`（build.js 复制资源 → bun build --compile）
+
+### 对话式 TUI（Ink 实现）
+- 启动画面：彩虹渐变 ASCII Logo（`ui/splash.ts`，纯 Node 逐字符着色）+ 初始化进度
+- 消息列表：用户/AI/工具消息不同颜色区分，支持滚动
+- 输入框：底部输入，↑↓ 历史记录，Enter 提交
+- 状态栏：显示智能体、状态、提示信息
+- 工具调用可视化：分析中显示状态
+- 透明背景：工具不强制背景色，由终端模拟器（Windows Terminal/WezTerm）设置透明度
+- 快捷命令：/scan /analyze /knowledge /nday /status /help /quit
+- 自动路由：TTY 终端用 Ink，管道/无 TTY 自动降级轻量 TUI（`tui --legacy`）
+
+### 关键实现
+- `react-devtools-core` stub（ink 可选依赖，Node 环境不可用）
+- Ink TUI 组件：`packages/cli/src/ui/ink-chat.tsx` + `ink-index.ts`
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：
