@@ -27,7 +27,10 @@
     "openai": "^7.4.0",
     "rcedit": "^5.0.2",
     "react": "^19.2.8",
-    "tiktoken": "^1.0.0"
+    "tiktoken": "^1.0.0",
+    "tree-sitter-wasm": "^1.1.3",
+    "tree-sitter-wasms": "^0.1.13",
+    "web-tree-sitter": "^0.26.12"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

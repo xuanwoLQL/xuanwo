@@ -296,6 +296,17 @@ packages/resources/skills/
 - 每次只调用一个工具，观察后再决策
 - CLI scan/analyze/report 展示调用链与触发条件
 
+### 函数索引 + 受限探索（借鉴 SCOUT function_index）
+- tree-sitter 解析 C/C++：函数名/签名/行范围/函数体/文件内调用关系
+- 受限探索工具：`view_index`（函数索引）/ `view_function`（函数详情+调用者）
+- 解决 19 万文件规模问题——LLM 按函数精确浏览而非整文件读
+
+### 证据门控（借鉴 T3MP3ST gateLiveFinding）
+- tool：完整证据（代码片段+调用链+触发条件）→ 置信度保留
+- context：部分证据 → 置信度 ×0.6
+- none：无证据 → 置信度上限 0.3
+- 杜绝"无证据高置信度"的假阳性
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

@@ -9,6 +9,7 @@ import type { ToolExecutor } from "./ToolExecutor.js";
 import type { AgentTool } from "../agent/react.js";
 import { createMethodologyTools } from "../agent/methodology.js";
 import { isWslPath, toWslPath, wslReadFile, wslGrep } from "./wsl.js";
+import { indexFile, formatViewIndex, formatViewFunction } from "../scan/indexer.js";
 
 /** 纯 JS 递归 grep（不依赖外部命令，规避 Windows 无 rg 问题） */
 function grepTree(
@@ -229,6 +230,47 @@ export function createBuiltinTools(
         const re = new RegExp(`\\b${escapeRe(func)}\\s*\\(`, "g");
         const matches = grepTree(abs, re, /\.(c|cpp|cc|h|hpp)$/, maxResults);
         return matches.length ? matches.join("\n") : `未找到 ${func} 的调用者`;
+      } catch (e) {
+        return `错误: ${(e as Error).message}`;
+      }
+    },
+  });
+
+  // 受限探索工具（借鉴 SCOUT VIEW_INDEX / VIEW_FUNCTION）
+  tools.push({
+    definition: {
+      name: "view_index",
+      description: "查看文件的函数索引（函数名/签名/行范围/调用关系）。分析前先用此工具了解文件结构。参数: {path: string}",
+      parameters: { type: "object", properties: { path: { type: "string" } }, required: ["path"] },
+    },
+    execute: async (args) => {
+      const path = String(args.path ?? "");
+      if (!path) return "错误: 缺少 path 参数";
+      try {
+        const abs = toolExecutor.checkPath(path);
+        const idx = await indexFile(abs);
+        if (!idx) return `无法索引 ${abs}（非 C/C++ 或解析失败）`;
+        return formatViewIndex(idx);
+      } catch (e) {
+        return `错误: ${(e as Error).message}`;
+      }
+    },
+  });
+  tools.push({
+    definition: {
+      name: "view_function",
+      description: "查看文件中指定函数的完整代码与调用关系。参数: {path: string, func: string}",
+      parameters: { type: "object", properties: { path: { type: "string" }, func: { type: "string" } }, required: ["path", "func"] },
+    },
+    execute: async (args) => {
+      const path = String(args.path ?? "");
+      const func = String(args.func ?? "");
+      if (!path || !func) return "错误: 缺少 path 或 func";
+      try {
+        const abs = toolExecutor.checkPath(path);
+        const idx = await indexFile(abs);
+        if (!idx) return `无法索引 ${abs}`;
+        return formatViewFunction(idx, func);
       } catch (e) {
         return `错误: ${(e as Error).message}`;
       }

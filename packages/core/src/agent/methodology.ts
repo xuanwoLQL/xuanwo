@@ -128,6 +128,46 @@ export function requireEvidence(points: SuspiciousPoint[]): SuspiciousPoint[] {
 }
 
 /**
+ * 证据门控（借鉴 T3MP3ST gateLiveFinding）
+ * 根据可疑点的证据完整度评级并调整置信度：
+ * - tool: 有代码片段+调用链+触发条件（强证据）→ 置信度保留
+ * - context: 只有部分证据 → 置信度 × 0.6，标记 needsVerification
+ * - none: 无任何代码证据 → 置信度上限 0.3
+ */
+export interface GatedFinding {
+  point: SuspiciousPoint;
+  level: "tool" | "context" | "none";
+  originalConfidence: number;
+}
+
+export function gateFindings(points: SuspiciousPoint[]): GatedFinding[] {
+  return points.map((p) => {
+    const hasCode = Boolean(p.evidence?.codeSnippet);
+    const hasChain = p.evidence?.callChain && p.evidence.callChain.length > 0;
+    const hasTrigger = Boolean(p.evidence?.triggerCondition);
+
+    if (hasCode && hasChain && hasTrigger) {
+      // 完整证据
+      return { point: p, level: "tool", originalConfidence: p.confidence };
+    }
+    if (hasCode || hasChain || hasTrigger) {
+      // 部分证据：降置信度
+      return {
+        point: { ...p, confidence: Math.min(p.confidence, p.confidence * 0.6), evidence: { ...p.evidence, needsVerification: true } },
+        level: "context",
+        originalConfidence: p.confidence,
+      };
+    }
+    // 无证据：大幅降置信度
+    return {
+      point: { ...p, confidence: Math.min(0.3, p.confidence), evidence: { ...p.evidence, needsVerification: true } },
+      level: "none",
+      originalConfidence: p.confidence,
+    };
+  });
+}
+
+/**
  * 漏洞链检测（借鉴 CyberStrike Chain Awareness）
  * 当多个可疑点位于同一数据流/调用链上时，标记为潜在漏洞链并升级严重度。
  */
