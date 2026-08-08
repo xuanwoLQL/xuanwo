@@ -25,3 +25,6 @@ AutoYara-main.zip
 T3MP3ST-main.zip
 scout-master.zip
 *.zip
+
+# 生成的 cyberstrike 集成配置（本机）
+.cyberstrike/

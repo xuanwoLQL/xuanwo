@@ -365,6 +365,31 @@ xuanwo
 4. L3 提交 CWE 编号
 5. 提交前 git 交叉验证（wrongAnswerLimit=5 很紧）
 
+## CyberStrike 集成（xuanwo 能力注入成熟框架）
+
+### 方案
+把 xuanwo 的 Nday/0day 能力做成 cyberstrike 的 **subagent + skill**（不修改 exe，只加配置）：
+
+```
+~/.config/cyberstrike/
+├── agents/openharmony-hunter.md  ← 主控（Patch Diffing + 三级提交）
+├── agents/napi-auditor.md        ← NAPI 审计
+├── agents/ipc-analyzer.md        ← IPC 分析
+├── agents/race-checker.md        ← 竞争检测
+├── agents/poc-generator.md       ← PoC 生成
+└── skill/SKILL.md                ← ohos-nday 方法论
+```
+
+### 验证结果
+- 5 个 agent 全部被 cyberstrike 加载（`agent list` 确认）
+- 现有渗透 agent（proxy-tester-* 等）零干扰
+- skill 工具注册成功
+
+### 使用
+- 集成：`node scripts/integrate-cyberstrike.js --install`
+- 在 cyberstrike TUI 里 `@openharmony-hunter` 调用
+- 日常 Web 渗透/CTF 不受影响（新增 subagent 不碰 primary）
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：
