@@ -1,9 +1,7 @@
-import { KnowledgeBase } from "@xuanwo/core";
-import { join } from "node:path";
-import { homedir } from "node:os";
+import { KnowledgeBase, resolveResourcePaths } from "@xuanwo/core";
 
 export function getKnowledgeDir(): string {
-  return process.env.XUANWO_KNOWLEDGE_DIR ?? join(process.cwd(), "packages", "resources", "knowledge");
+  return process.env.XUANWO_KNOWLEDGE_DIR ?? resolveResourcePaths().knowledgeDir;
 }
 
 export async function runKnowledgeCommand(opts: { list?: boolean; search?: string; stats?: boolean; module?: string }) {

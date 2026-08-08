@@ -22,6 +22,7 @@ import { SkillRegistry } from "./skills/registry.js";
 import { SkillExecutor } from "./skills/executor.js";
 import { McpManager } from "./mcp/client.js";
 import { loadMcpConfig } from "./mcp/config.js";
+import { resolveResourcePaths } from "./resources.js";
 import type { AuditContext } from "./agent/audit-context.js";
 
 /**
@@ -104,10 +105,11 @@ export class AgentRuntime {
     };
     const llm = createLlmClient(llmConfig);
 
-    // 资源路径（支持覆盖）
-    const agentsDir = options.agentsDir ?? join(process.cwd(), "packages", "resources", "agents");
-    const knowledgeDir = options.knowledgeDir ?? join(process.cwd(), "packages", "resources", "knowledge");
-    const skillsDir = options.skillsDir ?? join(process.cwd(), "packages", "resources", "skills");
+    // 资源路径（支持覆盖 + 自动探测）
+    const res = resolveResourcePaths();
+    const agentsDir = options.agentsDir ?? res.agentsDir;
+    const knowledgeDir = options.knowledgeDir ?? res.knowledgeDir;
+    const skillsDir = options.skillsDir ?? res.skillsDir;
 
     // 加载知识库
     const knowledge = new KnowledgeBase(knowledgeDir);

@@ -200,6 +200,25 @@ packages/resources/skills/
 - MCP SDK 1.30 的 `inputSchema` 必须用 **Zod schema**（普通 JSON object 抛错）
 - MCP server 的 stdio 与 console.log 冲突 → server 端不打印到 stdout
 
+## 第九阶段：打包与分发（已完成）
+
+### SEA 打包
+- `npm run package` → esbuild 单文件 + Node SEA + postject 注入 → `dist/xuanwo.exe`（约 90MB，无需安装 Node）
+- 资源外置策略：`dist/resources/`（智能体/技能/知识库）+ `dist/node_modules/keytar/`（原生模块）
+- 资源路径自动探测：exe 同目录 → 环境变量 → 当前目录（`core/src/resources.ts`）
+
+### 自定义图标
+- `scripts/gen-icon.js`：纯 Node 生成盾牌风格 ICO
+- rcedit 注入 PE 图标资源（进程 detach 避免阻塞）
+
+### 分发文档
+- `docs/user-guide.md`：安装结构、快速上手、授权机制、外部依赖（Semgrep/ArkAnalyzer/HapTest 经 MCP 接入）
+
+### 验证结果
+- `xuanwo.exe --version / agent list / knowledge / skill / session / mcp` 全部正常
+- exe 内调用真实 LLM（deepseek-v4-flash）成功
+- keytar（Windows Vault）与 MCP server 连接在 SEA 中均可用
+
 ## 免责声明
 
 本工具仅用于授权的安全测试与研究。使用者必须确认：

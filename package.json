@@ -10,6 +10,10 @@
   "scripts": {
     "build": "esbuild packages/cli/src/index.ts --bundle --platform=node --format=cjs --outfile=dist/xuanwo.cjs --external:keytar --alias:@xuanwo/core=./packages/core/src/index.ts --tsconfig=tsconfig.json",
     "typecheck": "tsc --noEmit",
+    "dist": "node scripts/build.js",
+    "sea": "node scripts/build-sea.js",
+    "package": "node scripts/build.js && node scripts/build-sea.js",
+    "icon": "node scripts/gen-icon.js",
     "prototype:extract": "node scripts/extract-knowledge.js",
     "prototype:tool-executor": "node scripts/prototype-tool-executor.js",
     "prototype:sea": "node scripts/prototype-sea.js"
@@ -20,6 +24,7 @@
     "keytar": "^7.9.0",
     "minisearch": "^7.0.0",
     "openai": "^7.4.0",
+    "rcedit": "^5.0.2",
     "tiktoken": "^1.0.0"
   },
   "devDependencies": {
