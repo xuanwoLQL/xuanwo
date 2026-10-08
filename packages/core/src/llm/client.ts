@@ -61,8 +61,14 @@ export class OpenAiCompatibleClient implements LlmClient {
       response_format: options.jsonMode ? { type: "json_object" } : undefined,
     });
     const usage = resp.usage;
+    const msg = resp.choices[0]?.message as
+      | { content?: string | null; reasoning_content?: string | null }
+      | undefined;
+    // 推理型模型（DeepSeek R1 等）可能把最终答案放 content，推理过程放 reasoning_content。
+    // 若 content 为空，回退到 reasoning_content（llama.cpp 的 DeepSeek 模型如此）。
+    const raw = msg?.content?.trim() ?? msg?.reasoning_content?.trim() ?? "";
     return {
-      content: resp.choices[0]?.message?.content ?? "",
+      content: raw,
       tokensIn: usage?.prompt_tokens ?? 0,
       tokensOut: usage?.completion_tokens ?? 0,
     };

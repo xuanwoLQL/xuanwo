@@ -13,7 +13,7 @@ const PROVIDERS = [
   { id: "deepseek", label: "DeepSeek（默认，deepseek-v4-flash）", defaultModel: "deepseek-v4-flash" },
   { id: "openai", label: "OpenAI（GPT-4o 等）", defaultModel: "gpt-4o" },
   { id: "anthropic", label: "Anthropic（Claude 3.5 Sonnet 等）", defaultModel: "claude-sonnet-4-5" },
-  { id: "ollama", label: "本地模型（Ollama / vLLM）", defaultModel: "qwen2.5-coder:7b", needsBaseUrl: true },
+  { id: "ollama", label: "本地模型（llama.cpp / Ollama / vLLM）", defaultModel: "local", needsBaseUrl: true },
 ];
 
 export interface SetupResult {
@@ -79,7 +79,7 @@ export async function runSetup(io: SetupIO = {}): Promise<SetupResult> {
 
     // 4. 自定义 baseUrl（可选）
     if (provider.needsBaseUrl) {
-      result.baseUrl = await ask("输入 Ollama 地址", "http://localhost:11434/v1");
+      result.baseUrl = await ask("输入本地模型地址", "http://127.0.0.1:8080/v1");
     }
 
     // 5. 默认模型

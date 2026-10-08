@@ -147,12 +147,17 @@ export class AgentRuntime {
     const skillExecutor = new SkillExecutor(toolExecutor, allowedTools);
 
     // 生成模板上下文（含技能摘要，作为可发现资源）
-    const knowledgeSummary = buildKnowledgeSummary(knowledge.all(), cfg.authorizedTarget ?? "");
+    // 精简模式（XUANWO_LITE_CONTEXT=1）：压缩知识注入，适配小上下文本地模型
+    const lite = process.env.XUANWO_LITE_CONTEXT === "1";
+    const knowledgeSummary = buildKnowledgeSummary(
+      lite ? knowledge.all().slice(0, 8) : knowledge.all(),
+      cfg.authorizedTarget ?? ""
+    );
     const baseCtx = {
       DEFAULT_MODEL: cfg.defaultModel || "deepseek-v4-flash",
       KNOWLEDGE_SUMMARY: knowledgeSummary,
       AVAILABLE_SKILLS: skills.summaryText(),
-      SKILL_CONTENT: skills.fullContentText(8000),
+      SKILL_CONTENT: skills.fullContentText(lite ? 2000 : 8000),
     };
 
     // 加载智能体（第一遍：基础 ctx）
